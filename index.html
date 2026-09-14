@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSO Netbooks - Identificador de Generaciones</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="#" class="brand" onclick="navigateTo('view-inicio')">
+                TSO Netbooks <span>v1.2</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><button class="nav-btn active" data-target="view-inicio">Inicio</button></li>
+                    <li><button class="nav-btn" data-target="view-identificar">Cuestionario Guiado</button></li>
+                    <li><button class="nav-btn" data-target="view-generaciones">Catálogo G1-G6</button></li>
+                    <li><button class="nav-btn" data-target="view-informacion">Información</button></li>
+                    <li><button class="nav-btn" data-target="view-registro">Registro</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- INICIO -->
+        <section id="view-inicio" class="view active">
+            <div class="hero">
+                <h1>Identificador de Generaciones</h1>
+                <p>Herramienta técnica para la identificación precisa de netbooks escolares y consulta de procedimientos de desbloqueo.</p>
+              
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; max-width: 500px; margin: 0 auto;">
+                    <button class="btn" onclick="startWizard()">Iniciar Cuestionario Guiado →</button>
+                </div>
+            </div>
+
+            <div class="quick-access-grid">
+                <div class="quick-card" onclick="startWizard()">
+                    <h3>🔎 Cuestionario Guiado (4 preguntas)</h3>
+                    <p>Proceso dinámico por marca, cámara, manija y batería para mayor precisión.</p>
+                </div>
+                <div class="quick-card" onclick="navigateTo('view-generaciones')">
+                    <h3>💻 Catálogo de Generaciones</h3>
+                    <p>Consultá de forma directa las características de las generaciones G1 a G6.</p>
+                </div>
+                <div class="quick-card" onclick="navigateTo('view-informacion')">
+                    <h3>📖 Guía técnica ampliatoria</h3>
+                    <p>Detalles sobre componentes, placas madre e indicadores visuales.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CUESTIONARIO GUIADO (4 PREGUNTAS) -->
+        <section id="view-identificar" class="view">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                    <span id="wizard-step-label">Pregunta 1 / 4</span>
+                    <span id="wizard-percent-label">25%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="wizard-progress" class="progress-bar"></div>
+                </div>
+
+                <div class="question-card">
+                    <div id="question-title" class="question-title">Cargando pregunta...</div>
+                    <div id="question-options" class="options-grid"></div>
+                </div>
+                <div style="margin-top: 1rem; text-align: left;">
+                    <button class="btn btn-secondary" style="width: auto;" onclick="prevWizardStep()" id="btn-wizard-prev" disabled>← Anterior</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTADO CON GALERÍA DE MÚLTIPLES FOTOS -->
+        <section id="view-resultado" class="view">
+            <div class="card result-card">
+                <span class="badge" style="background-color: var(--primary-light); color: var(--primary-dark); margin-bottom: 0.5rem;">Posible generación identificada</span>
+                <h1 id="res-gen-title" style="font-size: 2.5rem; color: var(--primary-dark); margin: 0.5rem 0;">G1</h1>
+                <p id="res-gen-models" style="color: var(--text-muted); font-weight: 600;">Marcas asociadas</p>
+
+                <!-- Galería Múltiple / Carrusel -->
+                <div class="gallery-container">
+                    <strong style="font-size: 0.9rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">
+                        📷 Verificá las imágenes de referencia (Hacé clic en las miniaturas):
+                    </strong>
+                    <img id="res-main-image" src="" alt="Foto principal" class="main-gallery-img" onclick="openZoomImage(this.src)">
+                    <div class="thumbnails-grid" id="res-thumbnails-container"></div>
+                </div>
+
+                <div style="text-align: left; margin-top: 1rem;">
+                    <strong style="font-size: 0.9rem; color: var(--text-muted);">Características coincidentes:</strong>
+                    <ul id="res-matched-list" class="matched-list"></ul>
+                </div>
+
+                <!-- Confirmación de coincidencia -->
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <button class="btn" id="btn-confirm-match">✓ Confirmar coincidencia</button>
+                    <button class="btn btn-danger" onclick="handleNoMatch()">✕ No coincide / Reintentar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTADO MÚLTIPLE O SIN COINCIDENCIAS -->
+        <section id="view-resultado-multiple" class="view">
+            <div class="card" style="text-align: center;">
+                <h2 id="multi-title">Resultado de búsqueda</h2>
+                <p id="multi-desc" style="color: var(--text-muted); margin-bottom: 1rem;">Opciones compatibles encontradas.</p>
+                
+                <div class="info-box" style="text-align: left; margin-bottom: 1.5rem;">
+                    <strong>⚠️ En caso de dudas o no coincidencia:</strong>
+                    <p style="margin-top: 0.25rem;">
+                        1. Si la netbook es de modelo reciente (G7 en adelante), recordá que se desbloquea mediante **Software**.<br>
+                        2. **Positivo BGH** suele corresponder a **G3** y **Banghó** a **G4.1**.<br>
+                        3. Ante la duda, por favor **consultá al responsable técnico a cargo**.
+                    </p>
+                </div>
+
+                <div id="multi-cards-container" class="grid-cards"></div>
+
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="width: auto;" onclick="startWizard()">Volver a intentar cuestionario</button>
+                    <button class="btn btn-secondary" style="width: auto;" onclick="navigateTo('view-generaciones')">Ver todas las generaciones</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROCEDIMIENTO PASO A PASO CON FOTOS AMPLIABLES -->
+        <section id="view-procedimiento" class="view">
+            <div class="card" style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span class="badge" id="proc-gen-badge">G1</span>
+                        <h2 style="margin-top: 0.25rem;">Procedimiento de Desbloqueo Hardware</h2>
+                    </div>
+                    <button class="btn btn-secondary" style="width: auto; font-size: 0.85rem;" onclick="navigateTo('view-inicio')">✕ Cancelar</button>
+                </div>
+            </div>
+
+            <div id="procedure-steps-container"></div>
+
+            <div id="procedure-completion-card" class="card" style="display: none; text-align: center; background-color: var(--primary-light); border-color: var(--primary);">
+                <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">✓ Checklist completado</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 1rem;">Verificá el equipo antes de finalizar la intervención.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn" style="width: auto;" onclick="openRegisterModal()">Finalizar y Registrar</button>
+                    <button class="btn btn-secondary" style="width: auto;" onclick="navigateTo('view-inicio')">Volver al inicio</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATÁLOGO DE GENERACIONES -->
+        <section id="view-generaciones" class="view">
+            <h2 style="margin-bottom: 1rem;">Catálogo de Generaciones (G1 a G6)</h2>
+            <div id="generaciones-grid" class="grid-cards"></div>
+        </section>
+
+        <!-- INFORMACIÓN GENERAL -->
+        <section id="view-informacion" class="view">
+            <h2 style="margin-bottom: 1rem;">Información General y Referencias</h2>
+            <div id="accordion-container"></div>
+        </section>
+
+        <!-- REGISTRO -->
+        <section id="view-registro" class="view">
+            <div class="card">
+                <h2>Registro de Equipos Intervenidos</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">Accedé a la planilla oficial externa o consultá las intervenciones guardadas localmente.</p>
+                <button class="btn" style="width: auto; margin-bottom: 1.5rem;" onclick="openExternalRegister()">Abrir registro externo ↗</button>
+
+                <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3>Últimos equipos registrados</h3>
+                    <button class="btn btn-danger" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="clearHistory()">Limpiar historial</button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Gen.</th>
+                                <th>Marca</th>
+                                <th>Obs.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="mobile-nav">
+        <ul>
+            <li><button class="nav-btn active" data-target="view-inicio">🏠<br>Inicio</button></li>
+            <li><button class="nav-btn" data-target="view-identificar">🔎<br>Guiado</button></li>
+            <li><button class="nav-btn" data-target="view-generaciones">💻<br>Catálogo</button></li>
+            <li><button class="nav-btn" data-target="view-registro">📋<br>Registro</button></li>
+        </ul>
+    </div>
+
+    <!-- MODAL GENERAL / VISOR DE IMAGEN AMPLIABLE -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content" id="modal-content"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
