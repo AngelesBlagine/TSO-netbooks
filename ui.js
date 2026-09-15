@@ -607,14 +607,44 @@ function renderSheetsData(data, container, userEmail) {
   container.innerHTML = tableHtml;
 }
 
-export async function liberarEquipo(identificacion, userEmail) {
-  if (!confirm(`¿Estás seguro que deseas liberar el equipo ${identificacion}?`))
-    return;
+export function liberarEquipo(identificacion, userEmail) {
+  const modal = document.getElementById("liberar-modal");
+  if (!modal) return;
 
-  const container = document.getElementById("sheets-data-container");
-  const originalHtml = container.innerHTML;
-  container.innerHTML =
-    "<p style='color: var(--text-muted); text-align: center; margin: 1rem 0;'>Liberando equipo, por favor esperá...</p>";
+  // Set hidden values
+  document.getElementById("liberar-hidden-id").value = identificacion;
+  document.getElementById("liberar-hidden-email").value = userEmail;
+
+  // Reset input and button
+  const input = document.getElementById("liberar-input-confirm");
+  input.value = "";
+  document.getElementById("liberar-btn-confirm").disabled = true;
+
+  modal.classList.add("active");
+}
+
+export function closeLiberarModal() {
+  const modal = document.getElementById("liberar-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+export function checkLiberarInput() {
+  const input = document.getElementById("liberar-input-confirm");
+  const btn = document.getElementById("liberar-btn-confirm");
+  if (input.value === "liberar equipo") {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+}
+
+export async function confirmLiberarEquipo() {
+  const identificacion = document.getElementById("liberar-hidden-id").value;
+  const userEmail = document.getElementById("liberar-hidden-email").value;
+  const btn = document.getElementById("liberar-btn-confirm");
+
+  btn.disabled = true;
+  btn.textContent = "Liberando...";
 
   try {
     const SCRIPT_URL =
@@ -629,16 +659,22 @@ export async function liberarEquipo(identificacion, userEmail) {
 
     const result = await response.json();
     if (result.success) {
+      closeLiberarModal();
       alert("Equipo liberado exitosamente.");
+
+      // La instrucción pide: "vacía la casilla 'Email del Responsable' en la vista y elimina la fila de la tabla del usuario."
+      // Podemos simplemente recargar la tabla de sheets
       await cargarDesdeSheets();
     } else {
       alert("Error al liberar el equipo: " + (result.error || "Desconocido"));
-      container.innerHTML = originalHtml;
+      btn.disabled = false;
+      btn.textContent = "Confirmar";
     }
   } catch (error) {
     console.error("Error liberando equipo:", error);
     alert("Error de red al intentar liberar el equipo.");
-    container.innerHTML = originalHtml;
+    btn.disabled = false;
+    btn.textContent = "Confirmar";
   }
 }
 
@@ -718,9 +754,23 @@ const qrwStepsConfig = [
   {
     id: "marca",
     title: "Marca del Equipo",
-    desc: "Ingresá la marca de la netbook.",
-    type: "text",
-    placeholder: "Ej: Coradir, Novatech...",
+    desc: "Seleccioná la marca de la netbook.",
+    type: "chips",
+    options: [
+      "EXO",
+      "SAMSUNG",
+      "POSITIVO BGH",
+      "BANGHÓ",
+      "CDR",
+      "DEPOT",
+      "HUNYRA",
+      "NEWTRONIC",
+      "NOVATECH",
+      "NOBLEX",
+      "EDUTEC",
+      "OTRO",
+    ],
+    footerInfo: "En caso de ser otra marca, escribirla en observaciones",
   },
   {
     id: "n_serie",
@@ -733,22 +783,22 @@ const qrwStepsConfig = [
     id: "generacion",
     title: "Generación",
     desc: "Generación a la que pertenece la netbook.",
-    type: "text",
-    placeholder: "Ej: G5",
+    type: "select",
+    options: ["", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8"],
   },
   {
     id: "bloqueada",
     title: "¿El equipo está bloqueado?",
     desc: "Indicá si la netbook presenta pantalla de bloqueo de hardware.",
     type: "select",
-    options: ["No", "Sí"],
+    options: ["", "NO BLOQUEADO", "BLOQUEADO"],
   },
   {
     id: "bateria",
     title: "Estado de Batería",
-    desc: "Indicá si retiene carga, si está inflada o ausente.",
-    type: "text",
-    placeholder: "Ej: Retiene carga, Ausente...",
+    desc: "Indicá si el equipo posee batería o no.",
+    type: "select",
+    options: ["", "NO TIENE", "TIENE"],
   },
   {
     id: "observaciones",
@@ -760,9 +810,9 @@ const qrwStepsConfig = [
   {
     id: "situacion_final",
     title: "Situación Final",
-    desc: "Estado en el que queda el equipo tras la intervención.",
-    type: "select",
-    options: ["Pendiente", "Reparada", "No reparable"],
+    desc: "Estado actual tras tu intervención.",
+    type: "text",
+    placeholder: "Ej: Pendiente de repuesto, Reparada...",
   },
 ];
 
@@ -832,17 +882,32 @@ function renderQrwStep() {
     const optionsHtml = currentConfig.options
       .map(
         (opt) =>
-          `<option value="${opt}" ${currentValue === opt ? "selected" : ""}>${opt}</option>`,
+          `<option value="${opt}" ${currentValue === opt ? "selected" : ""}>${opt || "Seleccionar..."}</option>`,
       )
       .join("");
-    inputHtml = `<select id="qrw-input" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;" onchange="checkQrwInput()">${optionsHtml}</select>`;
+    inputHtml = `<select id="qrw-input" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; background-color: var(--bg-main); color: var(--text-main);" onchange="checkQrwInput()">${optionsHtml}</select>`;
+  } else if (currentConfig.type === "chips") {
+    const chipsHtml = currentConfig.options
+      .map((opt) => {
+        const isSelected = currentValue === opt;
+        return `<button type="button" class="btn ${isSelected ? "btn-primary" : "btn-secondary"}" style="padding: 0.5rem 1rem; margin: 0.25rem; font-size: 0.9rem; width: auto; display: inline-block; flex-grow: 1; flex-basis: 30%;" onclick="document.getElementById('qrw-input').value = '${opt}'; document.querySelectorAll('.chip-btn').forEach(b => b.classList.replace('btn-primary', 'btn-secondary')); this.classList.replace('btn-secondary', 'btn-primary'); checkQrwInput();">${opt}</button>`;
+      })
+      .join("");
+
+    inputHtml = `
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: flex-start; margin-bottom: 1rem;">
+        ${chipsHtml.replace(/btn /g, "btn chip-btn ")}
+      </div>
+      <input type="hidden" id="qrw-input" value="${currentValue}">
+      ${currentConfig.footerInfo ? `<p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">${currentConfig.footerInfo}</p>` : ""}
+    `;
   }
 
   container.innerHTML = `
     <div class="question-title" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-main);">
       ${currentConfig.title} ${currentConfig.required ? '<span style="color: var(--error);">*</span>' : ""}
     </div>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">${currentConfig.desc}</p>
+    ${currentConfig.desc ? `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">${currentConfig.desc}</p>` : ""}
     ${inputHtml}
   `;
 
@@ -854,7 +919,7 @@ function renderQrwStep() {
   btnPrev.disabled = qrwState.step === 1;
   btnNext.textContent =
     qrwState.step === qrwState.totalSteps
-      ? "Finalizar y Guardar"
+      ? "+ Registrar Equipo"
       : "Siguiente →";
 
   checkQrwInput();
@@ -866,7 +931,7 @@ async function finishQrw() {
 
   btnNext.disabled = true;
   btnPrev.disabled = true;
-  btnNext.textContent = "Guardando...";
+  btnNext.innerHTML = `<span style="display:inline-block; animation: spin 1s linear infinite; margin-right: 8px;">⏳</span> Guardando...`;
 
   try {
     const { getUserProfile } = await import("./auth.js");
@@ -876,11 +941,14 @@ async function finishQrw() {
     const SCRIPT_URL =
       "https://script.google.com/macros/s/AKfycbw7u_8E_HO8oyY-1jT1kSpskkQQKCBosSRS5-6czjswjHJxe28S1X1RpUaz6t4DJEUZTg/exec";
 
+    const valorId = qrwState.data.identificacion || "";
     const payload = {
       action: "add",
       email: currentUserEmail,
+      id: String(valorId),
       data: {
-        identificacion: qrwState.data.identificacion || "",
+        identificacion: valorId,
+        Identificación: valorId,
         marca: qrwState.data.marca || "",
         n_serie: qrwState.data.n_serie || "",
         generacion: qrwState.data.generacion || "",
@@ -890,6 +958,8 @@ async function finishQrw() {
         situacion_final: qrwState.data.situacion_final || "Pendiente",
       },
     };
+
+    console.log("Payload enviado a Apps Script:", payload);
 
     const response = await fetch(SCRIPT_URL, {
       method: "POST",
@@ -902,20 +972,21 @@ async function finishQrw() {
     const result = await response.json();
 
     if (!result.success) {
-      if (result.errorType === "ALREADY_TAKEN") {
-        const ownerEmail = result.owner || "otro usuario";
-        alert(
-          `Este equipo ya está asignado a ${ownerEmail}. Te sugerimos buscar otra netbook para reparar.`,
-        );
-      } else {
-        alert(
-          "Error al guardar: " +
-            (result.error || "El ID no existe o ocurrió un error desconocido."),
-        );
-      }
+      const id = qrwState.data.identificacion || "Desconocido";
       btnNext.disabled = false;
-      btnNext.textContent = "Finalizar y Guardar";
+      btnNext.textContent = "+ Registrar Equipo";
       btnPrev.disabled = false;
+
+      let alertMsg = "";
+      if (result.errorType === "ALREADY_TAKEN" || result.owner) {
+        const ownerEmail = result.owner || "otro usuario";
+        alertMsg = `El equipo ID ${id} ya es responsabilidad del usuario ${ownerEmail}. Por favor, busca otra netbook para reparar o consulta con tu docente.`;
+      } else {
+        alertMsg = `El ID ingresado no se encuentra en la planilla pre-cargada. Verifica la etiqueta.`;
+      }
+
+      // Mostrar modal estilizada de error
+      showCustomAlert(alertMsg);
       return;
     }
 
@@ -942,4 +1013,34 @@ async function finishQrw() {
     btnNext.textContent = "Finalizar y Guardar";
     btnPrev.disabled = false;
   }
+}
+
+export function irARegistroRapido() {
+  navigateTo("view-inicio");
+  initQrw();
+  setTimeout(() => {
+    const wizard = document.getElementById("quick-register-wizard");
+    if (wizard) {
+      wizard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, 100);
+}
+
+export function showCustomAlert(message) {
+  let alertModal = document.getElementById("custom-alert-modal");
+  if (!alertModal) {
+    alertModal = document.createElement("div");
+    alertModal.id = "custom-alert-modal";
+    alertModal.className = "modal-overlay";
+    alertModal.innerHTML = `
+      <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <h3 style="color: var(--error); margin-bottom: 1rem;">Aviso Importante</h3>
+        <p id="custom-alert-msg" style="color: var(--text-main); margin-bottom: 1.5rem; line-height: 1.5;"></p>
+        <button class="btn" style="width: 100%; background-color: var(--error); border-color: var(--error);" onclick="document.getElementById('custom-alert-modal').classList.remove('active')">Entendido</button>
+      </div>
+    `;
+    document.body.appendChild(alertModal);
+  }
+  document.getElementById("custom-alert-msg").textContent = message;
+  alertModal.classList.add("active");
 }

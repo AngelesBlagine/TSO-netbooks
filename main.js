@@ -18,6 +18,11 @@ import {
   closeModal,
   cargarDesdeSheets,
   liberarEquipo,
+  closeLiberarModal,
+  checkLiberarInput,
+  confirmLiberarEquipo,
+  irARegistroRapido,
+  showCustomAlert,
   renderGeneracionesCatalog,
   toggleTheme,
   initTheme,
@@ -39,6 +44,11 @@ window.openRegisterModal = openRegisterModal;
 window.closeModal = closeModal;
 window.cargarDesdeSheets = cargarDesdeSheets;
 window.liberarEquipo = liberarEquipo;
+window.closeLiberarModal = closeLiberarModal;
+window.checkLiberarInput = checkLiberarInput;
+window.confirmLiberarEquipo = confirmLiberarEquipo;
+window.irARegistroRapido = irARegistroRapido;
+window.showCustomAlert = showCustomAlert;
 window.toggleTheme = toggleTheme;
 window.openSettingsModal = openSettingsModal;
 window.initQrw = initQrw;
