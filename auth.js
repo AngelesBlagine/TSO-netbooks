@@ -52,6 +52,27 @@ export async function cerrarSesion() {
   }
 }
 
+export async function getUserProfile() {
+  if (!supabase) return null;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return null;
+
+  const userId = session.user.id;
+  const { data: perfil } = await supabase
+    .from("perfiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+
+  return {
+    email: session.user.email,
+    proyecto: perfil?.proyecto || "N/A",
+    rol: perfil?.rol || "Técnico/Estudiante",
+  };
+}
+
 // Lógica para manejar los formularios
 document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("login-form");

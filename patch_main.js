@@ -1,9 +1,9 @@
 import fs from 'fs';
+
 let main = fs.readFileSync('main.js', 'utf8');
 
-main = main.replace('cargarRegistros,', 'cargarRegistros,\n  toggleTheme,\n  initTheme,');
-main = main.replace('window.cargarRegistros = cargarRegistros;', 'window.cargarRegistros = cargarRegistros;\nwindow.toggleTheme = toggleTheme;');
-
-main = main.replace('window.addEventListener("DOMContentLoaded", async () => {', 'window.addEventListener("DOMContentLoaded", async () => {\n  initTheme();');
+// Agregar las nuevas funciones globales a main.js
+main = main.replace('import {', 'import {\n  agregarFilaManual,\n  guardarFilaManual,');
+main = main.replace('window.openSettingsModal = openSettingsModal;', 'window.openSettingsModal = openSettingsModal;\nwindow.agregarFilaManual = agregarFilaManual;\nwindow.guardarFilaManual = guardarFilaManual;');
 
 fs.writeFileSync('main.js', main);

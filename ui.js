@@ -446,29 +446,58 @@ export function openGenModal(genId) {
   overlay.classList.add("active");
 }
 
-export function openRegisterModal() {
+export async function openRegisterModal() {
   const overlay = document.getElementById("modal-overlay");
   const content = document.getElementById("modal-content");
+
+  const { getUserProfile } = await import("./auth.js");
+  const profile = await getUserProfile();
+  const currentUserEmail = profile ? profile.email : "desconocido@email.com";
 
   content.className = "modal-content";
   content.innerHTML = `
                 <h3>Registrar Equipo Intervenido</h3>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Guardá el registro en la memoria local del dispositivo.</p>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Guarda la intervención de este equipo en la base de datos.</p>
                 
                 <div style="display:flex; flex-direction:column; gap:0.75rem; text-align:left;">
-                    <label style="font-size:0.85rem; font-weight:bold;">Generación
-                        <input type="text" id="reg-input-gen" value="${activeProcedureGen ? activeProcedureGen.id : ""}" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
+                    <label style="font-size:0.85rem; font-weight:bold;">Identificación
+                        <input type="text" id="reg-input-id" placeholder="ID corto" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
                     </label>
                     <label style="font-size:0.85rem; font-weight:bold;">Marca
                         <input type="text" id="reg-input-marca" value="${activeProcedureGen ? activeProcedureGen.marcas[0] : ""}" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
                     </label>
+                    <label style="font-size:0.85rem; font-weight:bold;">N° de Serie
+                        <input type="text" id="reg-input-nserie" placeholder="N° Serie" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
+                    </label>
+                    <label style="font-size:0.85rem; font-weight:bold;">Generación
+                        <input type="text" id="reg-input-gen" value="${activeProcedureGen ? activeProcedureGen.id : ""}" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
+                    </label>
+                    <label style="font-size:0.85rem; font-weight:bold;">Bloqueada
+                        <select id="reg-input-bloqueada" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
+                            <option value="No">No</option>
+                            <option value="Sí">Sí</option>
+                        </select>
+                    </label>
+                    <label style="font-size:0.85rem; font-weight:bold;">Batería
+                        <input type="text" id="reg-input-bateria" placeholder="Estado Batería" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
+                    </label>
                     <label style="font-size:0.85rem; font-weight:bold;">Observaciones
                         <textarea id="reg-input-obs" rows="2" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;"></textarea>
+                    </label>
+                    <label style="font-size:0.85rem; font-weight:bold;">Situación Final
+                        <select id="reg-input-situacion" style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px;">
+                            <option value="Reparada">Reparada</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="No reparable">No reparable</option>
+                        </select>
+                    </label>
+                    <label style="font-size:0.85rem; font-weight:bold;">Responsable
+                        <input type="text" id="reg-input-responsable" value="${currentUserEmail}" readonly style="width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:4px; margin-top:4px; background-color:var(--bg-main); color:var(--text-muted); cursor:not-allowed;">
                     </label>
                 </div>
 
                 <div style="display:flex; gap:0.5rem; margin-top:1.5rem;">
-                    <button class="btn" onclick="saveRecord()">Guardar Localmente</button>
+                    <button class="btn" id="btn-save-record" onclick="saveRecord()">Guardar</button>
                     <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
                 </div>
             `;
@@ -480,124 +509,137 @@ export function closeModal() {
   document.getElementById("modal-overlay").classList.remove("active");
 }
 
-export function openExternalRegister() {
-  if (REGISTRO_URL && REGISTRO_URL !== "PEGAR_AQUI_URL") {
-    window.open(REGISTRO_URL, "_blank");
-  } else {
-    alert("La URL del registro externo no ha sido configurada.");
-  }
-}
+export async function cargarDesdeSheets() {
+  const container = document.getElementById("sheets-data-container");
+  const btn = document.getElementById("btn-load-sheets");
+  if (!container || !btn) return;
 
-export function getHistory() {
-  return [];
-}
+  container.style.display = "block";
+  container.innerHTML =
+    "<p style='color: var(--text-muted); text-align: center; margin: 1rem 0;'>Cargando datos desde Sheets, por favor esperá...</p>";
+  btn.disabled = true;
 
-export async function saveRecord() {
-  const btn = document.getElementById("btn-save-record");
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = "Guardando...";
-  }
+  try {
+    const { getUserProfile } = await import("./auth.js");
+    const profile = await getUserProfile();
+    const userEmail = profile ? profile.email : null;
 
-  const gen = document.getElementById("reg-input-gen")?.value || "N/A";
-  const marca = document.getElementById("reg-input-marca")?.value || "N/A";
-  const estado = document.getElementById("reg-input-estado")?.value || "N/A";
-  const detalles = document.getElementById("reg-input-detalles")?.value || "-";
-
-  if (!supabase) {
-    alert("Error: Supabase no está configurado.");
-    if (btn) {
+    if (!userEmail) {
+      container.innerHTML =
+        "<p style='color: var(--error); text-align: center;'>No se pudo obtener el email del usuario logueado.</p>";
       btn.disabled = false;
-      btn.textContent = "Guardar Registro";
+      return;
     }
-    return;
-  }
 
-  const { error } = await supabase.from("registro_reparaciones").insert([
-    {
-      generacion: gen,
-      marca: marca,
-      estado: estado,
-      detalles: detalles,
-    },
-  ]);
+    const SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbw7u_8E_HO8oyY-1jT1kSpskkQQKCBosSRS5-6czjswjHJxe28S1X1RpUaz6t4DJEUZTg/exec";
+    const response = await fetch(
+      `${SCRIPT_URL}?email=${encodeURIComponent(userEmail)}`,
+    );
+    const result = await response.json();
 
-  if (error) {
-    alert("Error al guardar en Supabase: " + error.message);
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = "Guardar Registro";
+    if (result.success) {
+      const data = result.data;
+      if (data && data.length > 0) {
+        renderSheetsData(data, container, userEmail);
+      } else {
+        container.innerHTML =
+          "<p style='color: var(--text-muted); text-align: center; margin: 1rem 0;'>No se encontraron registros en la planilla para tu usuario.</p>";
+      }
+    } else {
+      container.innerHTML = `<p style='color: var(--error); text-align: center;'>Error del Apps Script: ${result.error}</p>`;
     }
-    return;
+  } catch (error) {
+    container.innerHTML = `<p style='color: var(--error); text-align: center;'>Error de red al consultar Google Sheets: ${error.message}</p>`;
+  } finally {
+    btn.disabled = false;
   }
-
-  closeModal();
-  await cargarRegistros();
-  navigateTo("view-registro");
 }
 
-export async function cargarRegistros() {
-  const tbody = document.getElementById("history-tbody");
-  if (!tbody) return;
-
-  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Cargando registros...</td></tr>`;
-
-  if (!supabase) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--error);">Supabase no está configurado.</td></tr>`;
-    return;
-  }
-
-  const { data, error } = await supabase
-    .from("registro_reparaciones")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--error);">Error al cargar: ${error.message}</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = "";
-
-  if (!data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hay equipos registrados.</td></tr>`;
-    return;
-  }
-
-  data.forEach((item) => {
-    const tr = document.createElement("tr");
-
-    let fechaFormateada = "N/A";
-    if (item.created_at) {
-      fechaFormateada = new Date(item.created_at).toLocaleDateString();
-    }
-
-    let badgeColor = "var(--border)";
-    let textColor = "var(--text-main)";
-    if (item.estado === "Reparada") {
-      badgeColor = "var(--primary-light)";
-      textColor = "var(--primary-dark)";
-    } else if (item.estado === "Pendiente") {
-      badgeColor = "var(--warning-bg)";
-      textColor = "#b08500";
-    } else if (item.estado === "No reparable") {
-      badgeColor = "#fde8e8";
-      textColor = "var(--error)";
-    }
-
-    tr.innerHTML = `
-      <td>${fechaFormateada}</td>
-      <td><strong>${item.generacion}</strong></td>
-      <td>${item.marca || "-"}</td>
-      <td><span class="badge" style="background-color: ${badgeColor}; color: ${textColor};">${item.estado || "-"}</span></td>
-      <td>${item.detalles || "-"}</td>
-    `;
-    tbody.appendChild(tr);
+function renderSheetsData(data, container, userEmail) {
+  if (!data || data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  let tableHtml = `<table class="history-table" style="min-width: 600px; font-size: 0.85rem;"><thead><tr>`;
+  headers.forEach((h) => {
+    const headerTitle = h.charAt(0).toUpperCase() + h.slice(1);
+    tableHtml += `<th>${headerTitle}</th>`;
   });
+  tableHtml += `<th>Acciones</th></tr></thead><tbody>`;
+  data.forEach((row) => {
+    tableHtml += `<tr>`;
+    let isOwner = false;
+    let identificacion = "";
+
+    headers.forEach((h) => {
+      let cellValue = row[h];
+      if (cellValue === undefined || cellValue === null || cellValue === "")
+        cellValue = "-";
+      tableHtml += `<td>${cellValue}</td>`;
+
+      // Check if user is owner by matching email in any column
+      if (
+        typeof cellValue === "string" &&
+        cellValue.toLowerCase().trim() === userEmail.toLowerCase().trim()
+      ) {
+        isOwner = true;
+      }
+
+      // Attempt to identify the 'id' column
+      const lowerH = h.toLowerCase();
+      if (lowerH.includes("identificaci") || lowerH === "id") {
+        identificacion = cellValue;
+      }
+    });
+
+    if (!identificacion && headers.length > 0) {
+      identificacion = row[headers[0]];
+    }
+
+    tableHtml += `<td>`;
+    if (isOwner) {
+      tableHtml += `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" onclick="liberarEquipo('${identificacion}', '${userEmail}')">Liberar Equipo</button>`;
+    } else {
+      tableHtml += `-`;
+    }
+    tableHtml += `</td></tr>`;
+  });
+  tableHtml += `</tbody></table>`;
+  container.innerHTML = tableHtml;
 }
 
-export function clearHistory() {
-  alert("La eliminación está deshabilitada (se usa BD remota).");
+export async function liberarEquipo(identificacion, userEmail) {
+  if (!confirm(`¿Estás seguro que deseas liberar el equipo ${identificacion}?`))
+    return;
+
+  const container = document.getElementById("sheets-data-container");
+  const originalHtml = container.innerHTML;
+  container.innerHTML =
+    "<p style='color: var(--text-muted); text-align: center; margin: 1rem 0;'>Liberando equipo, por favor esperá...</p>";
+
+  try {
+    const SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbw7u_8E_HO8oyY-1jT1kSpskkQQKCBosSRS5-6czjswjHJxe28S1X1RpUaz6t4DJEUZTg/exec";
+    const payload = { action: "delete", email: userEmail, id: identificacion };
+
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      alert("Equipo liberado exitosamente.");
+      await cargarDesdeSheets();
+    } else {
+      alert("Error al liberar el equipo: " + (result.error || "Desconocido"));
+      container.innerHTML = originalHtml;
+    }
+  } catch (error) {
+    console.error("Error liberando equipo:", error);
+    alert("Error de red al intentar liberar el equipo.");
+    container.innerHTML = originalHtml;
+  }
 }
 
 export function toggleTheme() {
@@ -625,5 +667,279 @@ function updateThemeIcon(isDark) {
   } else {
     // Show moon for light theme (to switch to dark)
     icon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+  }
+}
+
+export async function openSettingsModal() {
+  const modal = document.getElementById("settings-modal");
+  if (modal) {
+    modal.classList.add("active");
+    try {
+      const { getUserProfile } = await import("./auth.js");
+      const profile = await getUserProfile();
+      if (profile) {
+        document.getElementById("settings-email").textContent = profile.email;
+        document.getElementById("settings-rol").textContent = profile.rol;
+        document.getElementById("settings-proyecto").textContent =
+          profile.proyecto;
+      }
+    } catch (e) {
+      console.error("Error al cargar perfil:", e);
+      document.getElementById("settings-email").textContent = "Error al cargar";
+      document.getElementById("settings-rol").textContent = "Error al cargar";
+      document.getElementById("settings-proyecto").textContent =
+        "Error al cargar";
+    }
+  }
+}
+
+export function closeSettingsModal() {
+  const modal = document.getElementById("settings-modal");
+  if (modal) {
+    modal.classList.remove("active");
+  }
+}
+
+let qrwState = {
+  step: 1,
+  totalSteps: 8,
+  data: {},
+};
+
+const qrwStepsConfig = [
+  {
+    id: "identificacion",
+    title: "Identificación de la Netbook",
+    desc: "Corresponde al valor que aparece escrito con fibra sobre la cinta de papel.",
+    type: "text",
+    placeholder: "Ej: A-12",
+    required: true,
+  },
+  {
+    id: "marca",
+    title: "Marca del Equipo",
+    desc: "Ingresá la marca de la netbook.",
+    type: "text",
+    placeholder: "Ej: Coradir, Novatech...",
+  },
+  {
+    id: "n_serie",
+    title: "Número de Serie",
+    desc: "Identificador único de fábrica del equipo.",
+    type: "text",
+    placeholder: "Ej: NT2018...",
+  },
+  {
+    id: "generacion",
+    title: "Generación",
+    desc: "Generación a la que pertenece la netbook.",
+    type: "text",
+    placeholder: "Ej: G5",
+  },
+  {
+    id: "bloqueada",
+    title: "¿El equipo está bloqueado?",
+    desc: "Indicá si la netbook presenta pantalla de bloqueo de hardware.",
+    type: "select",
+    options: ["No", "Sí"],
+  },
+  {
+    id: "bateria",
+    title: "Estado de Batería",
+    desc: "Indicá si retiene carga, si está inflada o ausente.",
+    type: "text",
+    placeholder: "Ej: Retiene carga, Ausente...",
+  },
+  {
+    id: "observaciones",
+    title: "Observaciones",
+    desc: "Detalles adicionales sobre el estado del equipo.",
+    type: "textarea",
+    placeholder: "Falta tecla A, pantalla rayada...",
+  },
+  {
+    id: "situacion_final",
+    title: "Situación Final",
+    desc: "Estado en el que queda el equipo tras la intervención.",
+    type: "select",
+    options: ["Pendiente", "Reparada", "No reparable"],
+  },
+];
+
+export function initQrw() {
+  qrwState.step = 1;
+  qrwState.data = {};
+  renderQrwStep();
+}
+
+export function qrwNext() {
+  const currentConfig = qrwStepsConfig[qrwState.step - 1];
+  const input = document.getElementById("qrw-input");
+
+  if (input) {
+    qrwState.data[currentConfig.id] = input.value;
+  }
+
+  if (qrwState.step < qrwState.totalSteps) {
+    qrwState.step++;
+    renderQrwStep();
+  } else {
+    finishQrw();
+  }
+}
+
+export function qrwPrev() {
+  if (qrwState.step > 1) {
+    const currentConfig = qrwStepsConfig[qrwState.step - 1];
+    const input = document.getElementById("qrw-input");
+    if (input) {
+      qrwState.data[currentConfig.id] = input.value;
+    }
+    qrwState.step--;
+    renderQrwStep();
+  }
+}
+
+export function checkQrwInput() {
+  const currentConfig = qrwStepsConfig[qrwState.step - 1];
+  const btnNext = document.getElementById("qrw-btn-next");
+  if (currentConfig.required) {
+    const input = document.getElementById("qrw-input");
+    btnNext.disabled = !input || input.value.trim() === "";
+  } else {
+    btnNext.disabled = false;
+  }
+}
+
+function renderQrwStep() {
+  const container = document.getElementById("qrw-step-container");
+  if (!container) return;
+
+  const currentConfig = qrwStepsConfig[qrwState.step - 1];
+  const currentValue = qrwState.data[currentConfig.id] || "";
+
+  document.getElementById("qrw-step-label").textContent =
+    `Paso ${qrwState.step} / ${qrwState.totalSteps}`;
+  document.getElementById("qrw-progress").style.width =
+    `${(qrwState.step / qrwState.totalSteps) * 100}%`;
+
+  let inputHtml = "";
+  if (currentConfig.type === "text") {
+    inputHtml = `<input type="text" id="qrw-input" placeholder="${currentConfig.placeholder}" value="${currentValue}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;" oninput="checkQrwInput()">`;
+  } else if (currentConfig.type === "textarea") {
+    inputHtml = `<textarea id="qrw-input" placeholder="${currentConfig.placeholder}" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; resize: vertical;" oninput="checkQrwInput()">${currentValue}</textarea>`;
+  } else if (currentConfig.type === "select") {
+    const optionsHtml = currentConfig.options
+      .map(
+        (opt) =>
+          `<option value="${opt}" ${currentValue === opt ? "selected" : ""}>${opt}</option>`,
+      )
+      .join("");
+    inputHtml = `<select id="qrw-input" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;" onchange="checkQrwInput()">${optionsHtml}</select>`;
+  }
+
+  container.innerHTML = `
+    <div class="question-title" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-main);">
+      ${currentConfig.title} ${currentConfig.required ? '<span style="color: var(--error);">*</span>' : ""}
+    </div>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">${currentConfig.desc}</p>
+    ${inputHtml}
+  `;
+
+  const btnPrev = document.getElementById("qrw-btn-prev");
+  const btnNext = document.getElementById("qrw-btn-next");
+
+  btnPrev.style.display = "block";
+  btnNext.style.display = "block";
+  btnPrev.disabled = qrwState.step === 1;
+  btnNext.textContent =
+    qrwState.step === qrwState.totalSteps
+      ? "Finalizar y Guardar"
+      : "Siguiente →";
+
+  checkQrwInput();
+}
+
+async function finishQrw() {
+  const btnNext = document.getElementById("qrw-btn-next");
+  const btnPrev = document.getElementById("qrw-btn-prev");
+
+  btnNext.disabled = true;
+  btnPrev.disabled = true;
+  btnNext.textContent = "Guardando...";
+
+  try {
+    const { getUserProfile } = await import("./auth.js");
+    const profile = await getUserProfile();
+    const currentUserEmail = profile ? profile.email : "desconocido@email.com";
+
+    const SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbw7u_8E_HO8oyY-1jT1kSpskkQQKCBosSRS5-6czjswjHJxe28S1X1RpUaz6t4DJEUZTg/exec";
+
+    const payload = {
+      action: "add",
+      email: currentUserEmail,
+      data: {
+        identificacion: qrwState.data.identificacion || "",
+        marca: qrwState.data.marca || "",
+        n_serie: qrwState.data.n_serie || "",
+        generacion: qrwState.data.generacion || "",
+        bloqueada: qrwState.data.bloqueada || "No",
+        bateria: qrwState.data.bateria || "",
+        observaciones: qrwState.data.observaciones || "",
+        situacion_final: qrwState.data.situacion_final || "Pendiente",
+      },
+    };
+
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      if (result.errorType === "ALREADY_TAKEN") {
+        const ownerEmail = result.owner || "otro usuario";
+        alert(
+          `Este equipo ya está asignado a ${ownerEmail}. Te sugerimos buscar otra netbook para reparar.`,
+        );
+      } else {
+        alert(
+          "Error al guardar: " +
+            (result.error || "El ID no existe o ocurrió un error desconocido."),
+        );
+      }
+      btnNext.disabled = false;
+      btnNext.textContent = "Finalizar y Guardar";
+      btnPrev.disabled = false;
+      return;
+    }
+
+    // Recargar tabla si está visible
+    cargarDesdeSheets();
+
+    // Show confirmation and reset
+    const container = document.getElementById("qrw-step-container");
+    container.innerHTML = `
+      <div style="text-align: center; padding: 2rem 0;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+        <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">¡Registro guardado!</h3>
+        <p style="color: var(--text-muted);">El equipo fue ingresado correctamente a la base de datos.</p>
+        <button class="btn" style="margin-top: 1.5rem; width: auto;" onclick="initQrw()">Registrar otro equipo</button>
+      </div>
+    `;
+
+    btnNext.style.display = "none";
+    btnPrev.style.display = "none";
+  } catch (error) {
+    console.error("Error saving data:", error);
+    alert("Error de red al intentar guardar los datos.");
+    btnNext.disabled = false;
+    btnNext.textContent = "Finalizar y Guardar";
+    btnPrev.disabled = false;
   }
 }

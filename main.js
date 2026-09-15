@@ -1,5 +1,9 @@
 import { checkAuth, cerrarSesion } from "./auth.js";
 import {
+  initQrw,
+  qrwNext,
+  qrwPrev,
+  checkQrwInput,
   aplicarModoExposicion,
   navigateTo,
   startWizard,
@@ -8,19 +12,17 @@ import {
   handleNoMatch,
   loadProcedure,
   toggleStep,
-  toggleAccordion,
   openZoomImage,
   openGenModal,
   openRegisterModal,
   closeModal,
-  openExternalRegister,
-  saveRecord,
-  clearHistory,
+  cargarDesdeSheets,
+  liberarEquipo,
   renderGeneracionesCatalog,
-  renderAccordionInfo,
-  cargarRegistros,
   toggleTheme,
   initTheme,
+  openSettingsModal,
+  closeSettingsModal,
 } from "./ui.js";
 
 // Exponer funciones globales para los atributos 'onclick' en el HTML
@@ -31,16 +33,19 @@ window.prevWizardStep = prevWizardStep;
 window.handleNoMatch = handleNoMatch;
 window.loadProcedure = loadProcedure;
 window.toggleStep = toggleStep;
-window.toggleAccordion = toggleAccordion;
 window.openZoomImage = openZoomImage;
 window.openGenModal = openGenModal;
 window.openRegisterModal = openRegisterModal;
 window.closeModal = closeModal;
-window.openExternalRegister = openExternalRegister;
-window.saveRecord = saveRecord;
-window.clearHistory = clearHistory;
-window.cargarRegistros = cargarRegistros;
+window.cargarDesdeSheets = cargarDesdeSheets;
+window.liberarEquipo = liberarEquipo;
 window.toggleTheme = toggleTheme;
+window.openSettingsModal = openSettingsModal;
+window.initQrw = initQrw;
+window.qrwNext = qrwNext;
+window.qrwPrev = qrwPrev;
+window.checkQrwInput = checkQrwInput;
+window.closeSettingsModal = closeSettingsModal;
 window.cerrarSesion = cerrarSesion;
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -60,8 +65,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.body.style.display = "";
 
   renderGeneracionesCatalog();
-  renderAccordionInfo();
-  cargarRegistros();
+  initQrw();
   aplicarModoExposicion();
 
   // Listeners para botones de navegación
