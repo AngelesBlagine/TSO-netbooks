@@ -1,4 +1,4 @@
-import { checkAuth } from "./auth.js";
+import { checkAuth, cerrarSesion } from "./auth.js";
 import {
   aplicarModoExposicion,
   navigateTo,
@@ -19,6 +19,8 @@ import {
   renderGeneracionesCatalog,
   renderAccordionInfo,
   cargarRegistros,
+  toggleTheme,
+  initTheme,
 } from "./ui.js";
 
 // Exponer funciones globales para los atributos 'onclick' en el HTML
@@ -38,10 +40,24 @@ window.openExternalRegister = openExternalRegister;
 window.saveRecord = saveRecord;
 window.clearHistory = clearHistory;
 window.cargarRegistros = cargarRegistros;
+window.toggleTheme = toggleTheme;
+window.cerrarSesion = cerrarSesion;
 
 window.addEventListener("DOMContentLoaded", async () => {
+  initTheme();
+  // Para evitar destellos de la interfaz, la ocultamos hasta validar la sesión
+  document.body.style.display = "none";
+
   // 1. Validar autenticación con Supabase antes de cargar el contenido
-  await checkAuth();
+  const isAuthenticated = await checkAuth();
+
+  if (!isAuthenticated) {
+    // checkAuth ya se encarga de redirigir, detenemos la carga de la vista
+    return;
+  }
+
+  // Mostrar la interfaz si la validación es correcta
+  document.body.style.display = "";
 
   renderGeneracionesCatalog();
   renderAccordionInfo();

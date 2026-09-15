@@ -3,7 +3,7 @@ import { supabase } from "./supabaseClient.js";
 export async function checkAuth() {
   if (!supabase) {
     console.warn("Autenticación omitida: faltan credenciales de Supabase.");
-    return;
+    return false;
   }
 
   // 1. Verificamos si hay una sesión activa en Supabase
@@ -15,7 +15,7 @@ export async function checkAuth() {
   if (error || !session) {
     // No hay sesión, redirigir al login
     window.location.href = "login.html";
-    return;
+    return false;
   }
 
   // 2. Si hay sesión, verificamos en la tabla 'perfiles' si pertenece al proyecto correspondiente
@@ -34,6 +34,20 @@ export async function checkAuth() {
     );
     // Cerramos la sesión por seguridad
     await supabase.auth.signOut();
+    window.location.href = "login.html";
+    return false;
+  }
+  return true;
+}
+
+export async function cerrarSesion() {
+  try {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+  } catch (error) {
+    console.error("Error al cerrar sesión:", error);
+  } finally {
     window.location.href = "login.html";
   }
 }

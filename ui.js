@@ -3,20 +3,10 @@ import { CONFIG, REGISTRO_URL } from "./config.js";
 import { generaciones, wizardQuestions } from "./generaciones.js";
 
 export function aplicarModoExposicion() {
-  if (CONFIG.MODO_EXPOSICION) {
-    // Eliminar o ocultar el contenedor HTML del desbloqueo
-    const seccionDesbloqueo = document.getElementById("view-procedimiento");
-    if (seccionDesbloqueo) {
-      seccionDesbloqueo.style.display = "none";
-    }
-
-    // Eliminar o ocultar el enlace del menú de navegación (requiere ID en el HTML)
-    const navDesbloqueo = document.getElementById("nav-desbloqueo");
-    if (navDesbloqueo) {
-      navDesbloqueo.style.display = "none";
-    }
-  }
+  // Ya no ocultamos el contenedor HTML entero.
+  // La validación ahora se maneja en loadProcedure() para inyectar la tarjeta de bloqueo.
 }
+
 export let wizardState = { step: 0, answers: {} };
 export let activeProcedureGen = null;
 export let currentChecklistStatus = [];
@@ -223,6 +213,24 @@ export function loadProcedure(genId) {
   const container = document.getElementById("procedure-steps-container");
   container.innerHTML = "";
   document.getElementById("procedure-completion-card").style.display = "none";
+
+  if (CONFIG.MODO_EXPOSICION) {
+    container.innerHTML = `
+      <div class="card locked-card">
+          <div class="locked-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+          </div>
+          <h3>Contenido Protegido: Solicite Acceso</h3>
+          <span class="locked-subtitle">Próximamente</span>
+          <p>El procedimiento técnico detallado se encuentra restringido por motivos de seguridad en esta versión.</p>
+      </div>
+    `;
+    navigateTo("view-procedimiento");
+    return;
+  }
 
   let stepsHTML = `
         <div class="card step-card" id="step-card-0">
@@ -590,4 +598,32 @@ export async function cargarRegistros() {
 
 export function clearHistory() {
   alert("La eliminación está deshabilitada (se usa BD remota).");
+}
+
+export function toggleTheme() {
+  const isDark = document.body.classList.toggle("dark-theme");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+  updateThemeIcon(isDark);
+}
+
+export function initTheme() {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-theme");
+    updateThemeIcon(true);
+  } else {
+    updateThemeIcon(false);
+  }
+}
+
+function updateThemeIcon(isDark) {
+  const icon = document.getElementById("theme-icon");
+  if (!icon) return;
+  if (isDark) {
+    // Show sun for dark theme (to switch to light)
+    icon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+  } else {
+    // Show moon for light theme (to switch to dark)
+    icon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+  }
 }

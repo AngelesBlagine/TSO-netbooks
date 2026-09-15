@@ -15,6 +15,29 @@
   --radius-btn: 8px;
   --transition: all 0.2s ease-in-out;
 }
+body.dark-theme {
+  --bg-main: #121212;
+  --primary: #2ebc96;
+  --primary-dark: #249b7a;
+  --primary-light: #1f3832;
+  --warning-bg: #4a3d13;
+  --warning: #f2c94c;
+  --error: #ef5350;
+  --text-main: #e0e0e0;
+  --text-muted: #9e9e9e;
+  --white: #1e1e1e;
+  --border: #333333;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header, .card, .btn, input, textarea, select, table th, table td, .modal-content, .badge {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
 
 * {
   box-sizing: border-box;
@@ -559,4 +582,55 @@ main {
   main {
     padding-bottom: 5rem;
   }
+}
+
+/* Locked Card Styles */
+.locked-card {
+  text-align: center;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border: 2px dashed var(--border);
+  background-color: transparent;
+  margin-top: 2rem;
+}
+
+.locked-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.locked-card h3 {
+  color: var(--text-main);
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.locked-subtitle {
+  color: var(--warning);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background-color: var(--warning-bg);
+  padding: 0.4rem 1rem;
+  border-radius: 16px;
+}
+
+.locked-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 450px;
+  margin-top: 0.5rem;
+  line-height: 1.6;
 }
