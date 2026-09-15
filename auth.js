@@ -53,9 +53,22 @@ export async function cerrarSesion() {
 }
 
 // Lógica para manejar los formularios
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
+
+  // Verificar si ya hay sesión iniciada al entrar en login o registro
+  if (loginForm || registerForm) {
+    if (supabase) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        window.location.href = "index.html";
+        return;
+      }
+    }
+  }
 
   // LOGIC PARA INICIAR SESIÓN
   if (loginForm) {
