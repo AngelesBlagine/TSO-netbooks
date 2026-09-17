@@ -64,8 +64,8 @@ En lugar de sobreescribir filas enteras (lo cual rompía las fórmulas matricial
 <div align="center">
   <table>
     <tr>
-      <td><img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/ajustes.png" alt="tema_claro" width="200"><br><b>tema claro</b></td>
-      <td><img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/6a4a2f25432d5315709f0d3542f4bd57f56ed2ab/Capturas/ajustes_oscuro.png" alt="tema_oscuro" width="200"><br><b>tema oscuro</b></td>
+      <td><img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/ajustes.png" alt="tema_claro" width="800"></td>
+      <td><img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/6a4a2f25432d5315709f0d3542f4bd57f56ed2ab/Capturas/ajustes_oscuro.png" alt="tema_oscuro" width="800"></td>
     </tr>
   </table>
 </div>
