@@ -62,6 +62,8 @@ En lugar de sobreescribir filas enteras (lo cual rompía las fórmulas matricial
 | :---: | :---: | :---: |
 | `<img src="ruta/a/imagen1.png" width="250">` | `<img src="ruta/a/imagen2.png" width="250">` | `<img src="ruta/a/imagen3.png" width="250">` |
 
+![imagen](https://github.com/AngelesBlagine/TSO-netbooks/blob/810931a26405e51405f6e6ce34d37b0dbc8585a0/Capturas/registros.png)
+
 ---
 
 ## 🛠️ Instalación y Configuración Local
