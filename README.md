@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Estado-En%20Desarrollo-success?style=for-the-badge" alt="Estado">
-  <img src="https://img.shields.io/badge/Versión-1.0.0-blue?style=for-the-badge" alt="Versión">
+  <img src="https://img.shields.io/badge/Versión-1.2-blue?style=for-the-badge" alt="Versión">
   <img src="https://img.shields.io/badge/Licencia-MIT-orange?style=for-the-badge" alt="Licencia">
 </p>
 
@@ -56,14 +56,11 @@ En lugar de sobreescribir filas enteras (lo cual rompía las fórmulas matricial
 ---
 
 ## 📸 Capturas de Pantalla
-*(Agrega aquí imágenes de la interfaz: el inicio, el modo oscuro, la bitácora de horas, etc.)*
 
-| Dashboard Principal | Modal de Herramientas | Modo Oscuro / Temas |
-| :---: | :---: | :---: |
-| `<img src="ruta/a/imagen1.png" width="250">` | `<img src="ruta/a/imagen2.png" width="250">` | `<img src="ruta/a/imagen3.png" width="250">` |
-
-![imagen](https://github.com/AngelesBlagine/TSO-netbooks/blob/810931a26405e51405f6e6ce34d37b0dbc8585a0/Capturas/registros.png)
-
+![herramientas](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/herramientas.png)
+![registro](https://github.com/AngelesBlagine/TSO-netbooks/blob/810931a26405e51405f6e6ce34d37b0dbc8585a0/Capturas/registros.png)
+![bitacora](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/bit%C3%A1cora.png)
+![ajustes](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/ajustes.png)
 ---
 
 ## 🛠️ Instalación y Configuración Local
