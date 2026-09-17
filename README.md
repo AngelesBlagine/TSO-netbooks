@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logoUNO/banner.svg" alt="Banner del Proyecto">
+  <img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/1c3faeea3387298c86c0612e24b2c533b1967ce7/logoUNO/BANNER-UNO-LOGO.png" alt="Banner del Proyecto">
 </p>
 
 <h1 align="center">💻 Sistema de Gestión de Reparación de Netbooks</h1>
