@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.icons8.com/color/96/000000/laptop-coding.png" alt="Logo de la App"/>
+  <img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/22bacf8c7e75c199669385fc38b682524096abfd/logoUNO/UNO-LOGO.png" alt="Universidad Nacional del Oeste - Logo"/>
 </p>
 
 <h1 align="center">💻 Sistema de Gestión de Reparación de Netbooks</h1>
