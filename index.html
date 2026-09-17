@@ -900,7 +900,7 @@
     <div id="settings-modal" class="modal-overlay">
       <div class="modal-content" style="max-width: 400px; text-align: left">
         <button
-          onclick="closeSettingsModal()"
+          onclick="closeGenericModal('settings-modal')"
           class="btn btn-secondary"
           style="
             position: absolute;
@@ -1146,7 +1146,7 @@
           <button
             class="btn btn-secondary"
             style="width: auto"
-            onclick="closeLiberarModal()"
+            onclick="closeGenericModal('liberar-modal')"
           >
             Cancelar
           </button>
@@ -1267,7 +1267,7 @@
           <button
             class="btn btn-secondary"
             style="width: auto"
-            onclick="closeEditModal()"
+            onclick="closeGenericModal('edit-equipo-modal')"
           >
             Cancelar
           </button>
@@ -1287,7 +1287,7 @@
     <div
       id="kit-modal"
       class="modal-overlay"
-      onclick="if (event.target === this) closeKitModal();"
+      onclick="if (event.target === this) closeGenericModal('kit-modal');"
     >
       <div class="modal-content" style="max-width: 600px; text-align: left">
         <div
@@ -1302,7 +1302,7 @@
           <button
             class="btn btn-secondary"
             style="width: auto; padding: 0.5rem; line-height: 1"
-            onclick="closeKitModal()"
+            onclick="closeGenericModal('kit-modal')"
           >
             ✕
           </button>
@@ -1390,7 +1390,7 @@
     <div
       id="scanner-modal"
       class="modal-overlay"
-      onclick="if (event.target === this) closeScannerModal();"
+      onclick="if (event.target === this) closeGenericModal('scanner-modal');"
     >
       <div class="modal-content" style="max-width: 500px; text-align: left">
         <div
@@ -1431,7 +1431,7 @@
           <button
             class="btn btn-secondary"
             style="width: auto; padding: 0.5rem; line-height: 1"
-            onclick="closeScannerModal()"
+            onclick="closeGenericModal('scanner-modal')"
           >
             ✕
           </button>
@@ -1565,6 +1565,6 @@
         </div>
       </div>
     </div>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>

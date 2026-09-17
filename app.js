@@ -1,3 +1,4 @@
+import { checkAuth, cerrarSesion } from "./auth.js";
 import { supabase } from "./supabaseClient.js";
 import { CONFIG, REGISTRO_URL } from "./config.js";
 import { generaciones, wizardQuestions } from "./generaciones.js";
@@ -551,8 +552,14 @@ export async function openRegisterModal() {
   overlay.classList.add("active");
 }
 
+export function closeGenericModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove("active");
+  }
+}
 export function closeModal() {
-  document.getElementById("modal-overlay").classList.remove("active");
+  closeGenericModal("modal-overlay");
 }
 
 export async function cargarDesdeSheets() {
@@ -677,11 +684,6 @@ export function liberarEquipo(identificacion, userEmail) {
   document.getElementById("liberar-btn-confirm").disabled = true;
 
   modal.classList.add("active");
-}
-
-export function closeLiberarModal() {
-  const modal = document.getElementById("liberar-modal");
-  if (modal) modal.classList.remove("active");
 }
 
 export function checkLiberarInput() {
@@ -811,13 +813,6 @@ export async function openSettingsModal() {
       document.getElementById("settings-proyecto").textContent =
         "Error al cargar";
     }
-  }
-}
-
-export function closeSettingsModal() {
-  const modal = document.getElementById("settings-modal");
-  if (modal) {
-    modal.classList.remove("active");
   }
 }
 
@@ -1185,11 +1180,6 @@ export function openEditModal(identificacion, userEmail, rowJsonEncoded) {
   modal.classList.add("active");
 }
 
-export function closeEditModal() {
-  const modal = document.getElementById("edit-equipo-modal");
-  if (modal) modal.classList.remove("active");
-}
-
 export async function saveEditEquipo() {
   const id = document.getElementById("edit-hidden-id").value;
   const userEmail = document.getElementById("edit-hidden-email").value;
@@ -1405,20 +1395,9 @@ export function openKitModal() {
   }
 }
 
-export function closeKitModal() {
-  const modal = document.getElementById("kit-modal");
-  if (modal) {
-    modal.classList.remove("active");
-  }
-}
-
 export function openScannerModal() {
   const modal = document.getElementById("scanner-modal");
   if (modal) modal.classList.add("active");
-}
-export function closeScannerModal() {
-  const modal = document.getElementById("scanner-modal");
-  if (modal) modal.classList.remove("active");
 }
 
 export function selectHomeGen(btn) {
@@ -1432,3 +1411,67 @@ export function selectHomeGen(btn) {
   btn.classList.remove("btn-secondary");
   btn.classList.add("btn-primary");
 }
+
+// GLOBAL EXPORTS FOR HTML ONCLICK
+const globalFunctions = {
+  navigateTo,
+  startWizard,
+  selectWizardOption,
+  prevWizardStep,
+  handleNoMatch,
+  loadProcedure,
+  toggleStep,
+  openZoomImage,
+  openGenModal,
+  openRegisterModal,
+  closeModal,
+  closeGenericModal: closeGenericModal,
+  cargarDesdeSheets,
+  liberarEquipo,
+  checkLiberarInput,
+  confirmLiberarEquipo,
+  irARegistroRapido,
+  showCustomAlert,
+  openEditModal,
+  saveEditEquipo,
+  renderBitacora,
+  addBitacoraRecord,
+  editBitacoraRecord,
+  cancelBitacoraEdit,
+  deleteBitacoraRecord,
+  openKitModal,
+  openScannerModal,
+  selectHomeGen,
+  setThemeMode,
+  setThemeColor,
+  openSettingsModal,
+  initQrw,
+  qrwNext,
+  qrwPrev,
+  checkQrwInput,
+  cerrarSesion,
+};
+
+Object.entries(globalFunctions).forEach(([name, fn]) => {
+  if (fn) window[name] = fn;
+});
+
+// INITIALIZATION
+window.addEventListener("DOMContentLoaded", async () => {
+  initTheme();
+  document.body.style.display = "none";
+  const isAuthenticated = await checkAuth();
+  if (!isAuthenticated) return;
+  document.body.style.display = "";
+
+  renderGeneracionesCatalog();
+  renderBitacora();
+  initQrw();
+  aplicarModoExposicion();
+
+  document.querySelectorAll(".nav-btn").forEach((btn) => {
+    if (btn.dataset.target) {
+      btn.addEventListener("click", () => navigateTo(btn.dataset.target));
+    }
+  });
+});
