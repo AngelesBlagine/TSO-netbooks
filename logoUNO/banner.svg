@@ -1,0 +1,16 @@
+<svg xmlns="http://w3.org" xmlns:xlink="http://w3.org" width="800" height="200" viewBox="0 0 800 200">
+  <defs>
+    <!-- Definimos el degradado de 3 colores -->
+    <linearGradient id="degradado" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#048ABF" />
+      <stop offset="50%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#D91E75" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fondo con el degradado -->
+  <rect width="100%" height="100%" fill="url(#degradado)" />
+  
+  <!-- Estampamos tu logo de la Universidad centrado -->
+  <image href="https://github.com" x="300" y="25" width="200" height="150" />
+</svg>
