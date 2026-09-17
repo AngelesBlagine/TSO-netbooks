@@ -56,15 +56,17 @@ En lugar de sobreescribir filas enteras (lo cual rompía las fórmulas matricial
 ---
 
 ## 📸 Capturas de Pantalla
-
-![herramientas](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/herramientas.png)
-![registro](https://github.com/AngelesBlagine/TSO-netbooks/blob/810931a26405e51405f6e6ce34d37b0dbc8585a0/Capturas/registros.png)
-![bitacora](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/bit%C3%A1cora.png)
-![ajustes](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/ajustes.png)
+<p align="center">
+  <img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/herramientas.png" alt="herramientas" width="500">
+</p>
+<p align="center">
+  <img src="[ruta-de-tu-imagen.png](https://github.com/AngelesBlagine/TSO-netbooks/blob/810931a26405e51405f6e6ce34d37b0dbc8585a0/Capturas/registros.png)" alt="registro" width="500">
+</p>
+<p align="center">
+  <img src="[ruta-de-tu-imagen.png](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/bit%C3%A1cora.png)" alt="bitacora" width="500">
+</p>
+<p align="center">
+  <img src="[ruta-de-tu-imagen.png](https://github.com/AngelesBlagine/TSO-netbooks/blob/0dc38c1fb389c2ddc53f3413c0a3cca6f7b273a4/Capturas/ajustes.png)" alt="ajustes" width="500">
+</p>
 ---
 
-## 🛠️ Instalación y Configuración Local
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone [https://github.com/tu-usuario/tu-repositorio.git](https://github.com/tu-usuario/tu-repositorio.git)
