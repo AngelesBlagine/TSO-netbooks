@@ -23,11 +23,21 @@ import {
   confirmLiberarEquipo,
   irARegistroRapido,
   showCustomAlert,
+  openEditModal,
+  closeEditModal,
+  saveEditEquipo,
   renderGeneracionesCatalog,
   toggleTheme,
   initTheme,
   openSettingsModal,
   closeSettingsModal,
+  renderBitacora,
+  addBitacoraRecord,
+  editBitacoraRecord,
+  cancelBitacoraEdit,
+  deleteBitacoraRecord,
+  openKitModal,
+  closeKitModal,
 } from "./ui.js";
 
 // Exponer funciones globales para los atributos 'onclick' en el HTML
@@ -49,6 +59,16 @@ window.checkLiberarInput = checkLiberarInput;
 window.confirmLiberarEquipo = confirmLiberarEquipo;
 window.irARegistroRapido = irARegistroRapido;
 window.showCustomAlert = showCustomAlert;
+window.openEditModal = openEditModal;
+window.closeEditModal = closeEditModal;
+window.saveEditEquipo = saveEditEquipo;
+window.renderBitacora = renderBitacora;
+window.addBitacoraRecord = addBitacoraRecord;
+window.editBitacoraRecord = editBitacoraRecord;
+window.cancelBitacoraEdit = cancelBitacoraEdit;
+window.deleteBitacoraRecord = deleteBitacoraRecord;
+window.openKitModal = openKitModal;
+window.closeKitModal = closeKitModal;
 window.toggleTheme = toggleTheme;
 window.openSettingsModal = openSettingsModal;
 window.initQrw = initQrw;
@@ -75,11 +95,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.body.style.display = "";
 
   renderGeneracionesCatalog();
+  renderBitacora();
   initQrw();
   aplicarModoExposicion();
 
   // Listeners para botones de navegación
   document.querySelectorAll(".nav-btn").forEach((btn) => {
-    btn.addEventListener("click", () => navigateTo(btn.dataset.target));
+    if (btn.dataset.target) {
+      btn.addEventListener("click", () => navigateTo(btn.dataset.target));
+    }
   });
 });

@@ -12,6 +12,8 @@ export let activeProcedureGen = null;
 export let currentChecklistStatus = [];
 
 export function navigateTo(viewId) {
+  if (!viewId) return;
+
   document
     .querySelectorAll(".view")
     .forEach((el) => el.classList.remove("active"));
@@ -372,8 +374,7 @@ export function renderAccordionInfo() {
                         <ul style="font-size: 0.9rem; margin-bottom: 0.5rem; padding-left: 1.2rem;">
                             ${g.indicadores.map((i) => `<li>${i}</li>`).join("")}
                         </ul>
-                        <strong>Procedimiento técnico:</strong>
-                        <p style="font-size: 0.9rem; color: var(--primary-dark);">${g.procedimiento.join(" | ")}</p>
+                        
                     </div>
                 `;
     container.appendChild(item);
@@ -437,8 +438,7 @@ export function openGenModal(genId) {
                     ${g.indicadores.map((i) => `<li>${i}</li>`).join("")}
                 </ul>
 
-                <h4>Procedimiento Técnico (Resumen)</h4>
-                <p style="font-size:0.9rem; margin-bottom:1.5rem;">${g.procedimiento.join("<br>")}</p>
+                
 
                 <button class="btn" onclick="closeModal(); loadProcedure('${g.id}')">Ver procedimiento paso a paso →</button>
             `;
@@ -597,7 +597,17 @@ function renderSheetsData(data, container, userEmail) {
 
     tableHtml += `<td>`;
     if (isOwner) {
-      tableHtml += `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" onclick="liberarEquipo('${identificacion}', '${userEmail}')">Liberar Equipo</button>`;
+      // Escape row to JSON string
+      const rowJsonStr = encodeURIComponent(JSON.stringify(row));
+      tableHtml += `
+        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+          <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" onclick="openEditModal('${identificacion}', '${userEmail}', '${rowJsonStr}')">
+            ✏️ Editar
+          </button>
+          <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; width: auto;" onclick="liberarEquipo('${identificacion}', '${userEmail}')">
+            Liberar
+          </button>
+        </div>`;
     } else {
       tableHtml += `-`;
     }
@@ -1043,4 +1053,286 @@ export function showCustomAlert(message) {
   }
   document.getElementById("custom-alert-msg").textContent = message;
   alertModal.classList.add("active");
+}
+
+export function openEditModal(identificacion, userEmail, rowJsonEncoded) {
+  const modal = document.getElementById("edit-equipo-modal");
+  if (!modal) return;
+
+  let rowData = {};
+  try {
+    rowData = JSON.parse(decodeURIComponent(rowJsonEncoded));
+  } catch (e) {
+    console.error("Failed to parse row data", e);
+  }
+
+  document.getElementById("edit-hidden-id").value = identificacion;
+  document.getElementById("edit-hidden-email").value = userEmail;
+
+  // Find corresponding fields (case-insensitive check)
+  const getFieldValue = (keyName) => {
+    const key = Object.keys(rowData).find((k) =>
+      k.toLowerCase().includes(keyName),
+    );
+    return key ? rowData[key] : "";
+  };
+
+  const bloqueadaVal = getFieldValue("bloqueada") || "NO BLOQUEADA";
+  const bateriaVal = getFieldValue("bateria") || "NO TIENE";
+  const situacionVal = getFieldValue("situaci") || getFieldValue("final") || "";
+  const obsVal = getFieldValue("observacion") || "";
+
+  // Set the values in the modal
+
+  const selectBloqueada = document.getElementById("edit-select-bloqueada");
+  if (
+    bloqueadaVal.toUpperCase() === "BLOQUEADA" ||
+    bloqueadaVal.toUpperCase() === "SI"
+  ) {
+    selectBloqueada.value = "BLOQUEADA";
+  } else {
+    selectBloqueada.value = "NO BLOQUEADA";
+  }
+
+  const selectBateria = document.getElementById("edit-select-bateria");
+  if (
+    bateriaVal.toUpperCase() === "TIENE" ||
+    bateriaVal.toUpperCase() === "SI"
+  ) {
+    selectBateria.value = "TIENE";
+  } else {
+    selectBateria.value = "NO TIENE";
+  }
+
+  document.getElementById("edit-input-situacion").value = situacionVal;
+  document.getElementById("edit-textarea-observaciones").value = obsVal;
+
+  modal.classList.add("active");
+}
+
+export function closeEditModal() {
+  const modal = document.getElementById("edit-equipo-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+export async function saveEditEquipo() {
+  const id = document.getElementById("edit-hidden-id").value;
+  const userEmail = document.getElementById("edit-hidden-email").value;
+  const bloqueada = document.getElementById("edit-select-bloqueada").value;
+  const bateria = document.getElementById("edit-select-bateria").value;
+  const situacion = document.getElementById("edit-input-situacion").value;
+  const observaciones = document.getElementById(
+    "edit-textarea-observaciones",
+  ).value;
+
+  const btnSave = document.getElementById("edit-btn-save");
+
+  btnSave.disabled = true;
+  btnSave.innerHTML = `<span style="display:inline-block; animation: spin 1s linear infinite; margin-right: 8px;">⏳</span> Guardando...`;
+
+  const payload = {
+    action: "update",
+    email: userEmail,
+    id: String(id),
+    data: {
+      Bloqueada: bloqueada,
+      Batería: bateria,
+      "Situación Final": situacion,
+      Observaciones: observaciones,
+    },
+  };
+
+  console.log("Payload enviado a Apps Script para update:", payload);
+
+  const SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbw7u_8E_HO8oyY-1jT1kSpskkQQKCBosSRS5-6czjswjHJxe28S1X1RpUaz6t4DJEUZTg/exec";
+
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      closeEditModal();
+      showCustomAlert("¡Cambios guardados con éxito!");
+      await cargarDesdeSheets();
+    } else {
+      showCustomAlert(
+        "Error al actualizar: " + (result.error || "Desconocido"),
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    showCustomAlert("Error de red al intentar actualizar los datos.");
+  } finally {
+    btnSave.disabled = false;
+    btnSave.textContent = "Guardar Cambios";
+  }
+}
+
+// BITACORA LOGIC (Local Storage)
+export async function getBitacoraKey() {
+  try {
+    const { getUserProfile } = await import("./auth.js");
+    const profile = await getUserProfile();
+    if (profile && profile.email) {
+      return `bitacora_${profile.email}`;
+    }
+  } catch (e) {
+    console.error("Error fetching user email for bitacora", e);
+  }
+  return "bitacora_guest";
+}
+
+export async function renderBitacora() {
+  const tbody = document.getElementById("bitacora-tbody");
+  if (!tbody) return;
+
+  const key = await getBitacoraKey();
+  const data = JSON.parse(localStorage.getItem(key) || "[]");
+
+  if (data.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" style="text-align:center; padding: 1rem; color: var(--text-muted);">Aún no tienes registros de horas.</td></tr>';
+    return;
+  }
+
+  let html = "";
+  // Sort descending by id or date, let's keep it simple (as they are entered or reverse)
+  data.reverse().forEach((record) => {
+    // encode record to pass to edit function
+    const recordJsonStr = encodeURIComponent(JSON.stringify(record));
+    html += `
+      <tr>
+        <td>${record.fecha || "-"}</td>
+        <td>${record.horarioDesde ? record.horarioDesde + " - " + (record.horarioHasta || "") : record.horario || "-"}</td>
+        <td>${record.duracion || "-"}</td>
+        <td>${record.trabajo || "-"}</td>
+        <td>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; width: auto;" onclick="editBitacoraRecord('${recordJsonStr}')">✏️ Editar</button>
+            <button class="btn btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem; width: auto; color: var(--error);" onclick="deleteBitacoraRecord('${record.id}')">🗑️ Eliminar</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+export async function addBitacoraRecord() {
+  const fecha = document.getElementById("bitacora-fecha").value;
+  const horarioDesde = document.getElementById("bitacora-horario-desde").value;
+  const horarioHasta = document.getElementById("bitacora-horario-hasta").value;
+  const duracion = document.getElementById("bitacora-duracion").value;
+  const trabajo = document.getElementById("bitacora-trabajo").value;
+  const editId = document.getElementById("bitacora-edit-id").value;
+
+  if (!fecha || !duracion || !trabajo) {
+    showCustomAlert(
+      "Por favor, completa al menos Fecha, Duración y Trabajo Realizado.",
+    );
+    return;
+  }
+
+  const key = await getBitacoraKey();
+  let data = JSON.parse(localStorage.getItem(key) || "[]");
+
+  if (editId) {
+    // Update existing
+    const idx = data.findIndex((r) => r.id === editId);
+    if (idx !== -1) {
+      data[idx] = {
+        ...data[idx],
+        fecha,
+        horarioDesde,
+        horarioHasta,
+        duracion,
+        trabajo,
+      };
+      delete data[idx].horario;
+    }
+  } else {
+    // Create new
+    const newRecord = {
+      id: Date.now().toString(),
+      fecha,
+      horarioDesde,
+      horarioHasta,
+      duracion,
+      trabajo,
+    };
+    data.push(newRecord);
+  }
+
+  localStorage.setItem(key, JSON.stringify(data));
+  cancelBitacoraEdit(); // reset form
+  await renderBitacora();
+}
+
+export function editBitacoraRecord(recordEncoded) {
+  try {
+    const record = JSON.parse(decodeURIComponent(recordEncoded));
+    document.getElementById("bitacora-edit-id").value = record.id;
+    document.getElementById("bitacora-fecha").value = record.fecha;
+    document.getElementById("bitacora-horario-desde").value =
+      record.horarioDesde || record.horario || "";
+    document.getElementById("bitacora-horario-hasta").value =
+      record.horarioHasta || "";
+    document.getElementById("bitacora-duracion").value = record.duracion;
+    document.getElementById("bitacora-trabajo").value = record.trabajo;
+
+    document.getElementById("bitacora-btn-add").textContent = "Actualizar";
+    document.getElementById("bitacora-btn-cancel").style.display = "block";
+
+    // Scroll to the form
+    document
+      .getElementById("bitacora-fecha")
+      .scrollIntoView({ behavior: "smooth", block: "center" });
+  } catch (e) {
+    console.error("Error parsing bitacora record", e);
+  }
+}
+
+export function cancelBitacoraEdit() {
+  document.getElementById("bitacora-edit-id").value = "";
+  document.getElementById("bitacora-fecha").value = "";
+  document.getElementById("bitacora-horario-desde").value = "";
+  document.getElementById("bitacora-horario-hasta").value = "";
+  document.getElementById("bitacora-duracion").value = "";
+  document.getElementById("bitacora-trabajo").value = "";
+
+  document.getElementById("bitacora-btn-add").textContent = "Añadir";
+  document.getElementById("bitacora-btn-cancel").style.display = "none";
+}
+
+export async function deleteBitacoraRecord(id) {
+  if (
+    confirm("¿Estás seguro de que quieres eliminar este registro de horas?")
+  ) {
+    const key = await getBitacoraKey();
+    let data = JSON.parse(localStorage.getItem(key) || "[]");
+    data = data.filter((r) => r.id !== id);
+    localStorage.setItem(key, JSON.stringify(data));
+    await renderBitacora();
+  }
+}
+
+export function openKitModal() {
+  const modal = document.getElementById("kit-modal");
+  if (modal) {
+    modal.classList.add("active");
+  }
+}
+
+export function closeKitModal() {
+  const modal = document.getElementById("kit-modal");
+  if (modal) {
+    modal.classList.remove("active");
+  }
 }

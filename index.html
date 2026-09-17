@@ -79,7 +79,7 @@
           <h1>Identificador de Generaciones</h1>
           <p>
             Herramienta técnica para la identificación precisa de netbooks
-            escolares y consulta de procedimientos de desbloqueo.
+            escolares y registro de reparación.
           </p>
 
           <div
@@ -111,6 +111,13 @@
             <p>
               Consultá de forma directa las características de las generaciones
               G1 a G6.
+            </p>
+          </div>
+          <div class="quick-card" onclick="openKitModal()">
+            <h3>🧰 Kit de Reparación</h3>
+            <p>
+              Materiales necesarios y precauciones para la reparación y
+              desmontaje.
             </p>
           </div>
         </div>
@@ -228,6 +235,196 @@
                 >
                   <!-- Tabla dinámica renderizada por JS -->
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BITACORA DE TRABAJO -->
+          <div style="margin-top: 2rem">
+            <div class="card">
+              <h2>Bitácora de Trabajo (Control de Horas)</h2>
+              <p style="color: var(--text-muted); margin-bottom: 1rem">
+                Registrá tus horas de trabajo de forma local. Estos datos se
+                guardan únicamente en este dispositivo.
+              </p>
+
+              <div
+                style="
+                  display: flex;
+                  gap: 1rem;
+                  flex-wrap: wrap;
+                  margin-bottom: 1.5rem;
+                  align-items: flex-end;
+                "
+              >
+                <input type="hidden" id="bitacora-edit-id" value="" />
+                <div
+                  class="form-group"
+                  style="flex: 1; min-width: 120px; margin: 0"
+                >
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 0.5rem;
+                      color: var(--text-main);
+                      font-size: 0.85rem;
+                      font-weight: 500;
+                    "
+                    >Fecha</label
+                  >
+                  <input
+                    type="date"
+                    id="bitacora-fecha"
+                    class="input-field"
+                    style="width: 100%"
+                  />
+                </div>
+                <div
+                  class="form-group"
+                  style="flex: 1; min-width: 100px; margin: 0"
+                >
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 0.5rem;
+                      color: var(--text-main);
+                      font-size: 0.85rem;
+                      font-weight: 500;
+                    "
+                    >Llegada</label
+                  >
+                  <input
+                    type="time"
+                    id="bitacora-horario-desde"
+                    class="input-field"
+                    style="width: 100%"
+                  />
+                </div>
+                <div
+                  class="form-group"
+                  style="flex: 1; min-width: 100px; margin: 0"
+                >
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 0.5rem;
+                      color: var(--text-main);
+                      font-size: 0.85rem;
+                      font-weight: 500;
+                    "
+                    >Salida</label
+                  >
+                  <input
+                    type="time"
+                    id="bitacora-horario-hasta"
+                    class="input-field"
+                    style="width: 100%"
+                  />
+                </div>
+                <div
+                  class="form-group"
+                  style="flex: 1; min-width: 100px; margin: 0"
+                >
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 0.5rem;
+                      color: var(--text-main);
+                      font-size: 0.85rem;
+                      font-weight: 500;
+                    "
+                    >Duración (Hs)</label
+                  >
+                  <input
+                    type="number"
+                    step="0.5"
+                    id="bitacora-duracion"
+                    class="input-field"
+                    style="width: 100%"
+                    placeholder="Ej: 2.5"
+                  />
+                </div>
+                <div
+                  class="form-group"
+                  style="flex: 2; min-width: 200px; margin: 0"
+                >
+                  <label
+                    style="
+                      display: block;
+                      margin-bottom: 0.5rem;
+                      color: var(--text-main);
+                      font-size: 0.85rem;
+                      font-weight: 500;
+                    "
+                    >Trabajo Realizado</label
+                  >
+                  <input
+                    type="text"
+                    id="bitacora-trabajo"
+                    class="input-field"
+                    style="width: 100%"
+                    placeholder="Ej: Desbloqueo y flasheo G5..."
+                  />
+                </div>
+                <button
+                  class="btn"
+                  id="bitacora-btn-add"
+                  style="width: auto; height: 42px"
+                  onclick="addBitacoraRecord()"
+                >
+                  Añadir
+                </button>
+                <button
+                  class="btn btn-secondary"
+                  id="bitacora-btn-cancel"
+                  style="width: auto; height: 42px; display: none"
+                  onclick="cancelBitacoraEdit()"
+                >
+                  Cancelar
+                </button>
+              </div>
+
+              <div
+                style="
+                  overflow-x: auto;
+                  border: 1px solid var(--border);
+                  border-radius: 8px;
+                "
+              >
+                <table
+                  class="history-table"
+                  style="
+                    min-width: 600px;
+                    font-size: 0.85rem;
+                    width: 100%;
+                    margin-top: 0;
+                  "
+                >
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Llegada - Salida</th>
+                      <th>Duración (Hs)</th>
+                      <th>Trabajo Realizado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bitacora-tbody">
+                    <!-- Filas renderizadas por JS -->
+                    <tr>
+                      <td
+                        colspan="5"
+                        style="
+                          text-align: center;
+                          padding: 1rem;
+                          color: var(--text-muted);
+                        "
+                      >
+                        Cargando bitácora...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -493,8 +690,8 @@
           </button>
         </li>
         <li>
-          <button class="nav-btn" data-target="view-registro">
-            📋<br />Registro
+          <button class="nav-btn" onclick="openSettingsModal()">
+            ⚙️<br />Ajustes
           </button>
         </li>
       </ul>
@@ -725,6 +922,224 @@
           >
             Confirmar
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Editar Equipo -->
+    <div id="edit-equipo-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 450px; text-align: left">
+        <h3 style="color: var(--primary-dark); margin-bottom: 1rem">
+          Editar Equipo
+        </h3>
+        <p
+          style="
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+          "
+        >
+          Modificá el estado y las observaciones de este equipo.
+        </p>
+
+        <input type="hidden" id="edit-hidden-id" />
+        <input type="hidden" id="edit-hidden-email" />
+
+        <div class="form-group" style="margin-bottom: 1rem">
+          <label
+            style="
+              display: block;
+              margin-bottom: 0.5rem;
+              color: var(--text-main);
+              font-weight: 500;
+            "
+            >Bloqueada</label
+          >
+          <select
+            id="edit-select-bloqueada"
+            class="input-field"
+            style="width: 100%"
+          >
+            <option value="NO BLOQUEADA">NO BLOQUEADA</option>
+            <option value="BLOQUEADA">BLOQUEADA</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem">
+          <label
+            style="
+              display: block;
+              margin-bottom: 0.5rem;
+              color: var(--text-main);
+              font-weight: 500;
+            "
+            >Batería</label
+          >
+          <select
+            id="edit-select-bateria"
+            class="input-field"
+            style="width: 100%"
+          >
+            <option value="NO TIENE">NO TIENE</option>
+            <option value="TIENE">TIENE</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem">
+          <label
+            style="
+              display: block;
+              margin-bottom: 0.5rem;
+              color: var(--text-main);
+              font-weight: 500;
+            "
+            >Situación Final</label
+          >
+          <input
+            type="text"
+            id="edit-input-situacion"
+            class="input-field"
+            style="width: 100%"
+            placeholder="Ej: Reparada, Pendiente de repuesto..."
+          />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem">
+          <label
+            style="
+              display: block;
+              margin-bottom: 0.5rem;
+              color: var(--text-main);
+              font-weight: 500;
+            "
+            >Observaciones</label
+          >
+          <textarea
+            id="edit-textarea-observaciones"
+            class="input-field"
+            style="width: 100%; min-height: 80px"
+            placeholder="Agrega detalles..."
+          ></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem">
+          <button
+            class="btn btn-secondary"
+            style="width: auto"
+            onclick="closeEditModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            id="edit-btn-save"
+            class="btn"
+            style="width: auto"
+            onclick="saveEditEquipo()"
+          >
+            Guardar Cambios
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kit de Reparación Modal -->
+    <div
+      id="kit-modal"
+      class="modal-overlay"
+      onclick="if (event.target === this) closeKitModal();"
+    >
+      <div class="modal-content" style="max-width: 600px; text-align: left">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+          "
+        >
+          <h2 style="margin: 0">Kit de Reparación y Precauciones</h2>
+          <button
+            class="btn btn-secondary"
+            style="width: auto; padding: 0.5rem; line-height: 1"
+            onclick="closeKitModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <h3
+          style="
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-size: 1.1rem;
+          "
+        >
+          🛠️ Materiales Necesarios
+        </h3>
+        <ul
+          style="
+            margin-bottom: 1.5rem;
+            padding-left: 1.2rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+          "
+        >
+          <li><strong>Destornilladores</strong> (plano y Phillips).</li>
+          <li><strong>Soldador de estaño</strong> y alambre de estaño.</li>
+          <li>
+            <strong>Flux para soldar</strong> (Nota: colocar sobre el integrado
+            antes de soldar).
+          </li>
+          <li><strong>WD-40</strong> (para lubricar las bisagras).</li>
+          <li><strong>Guantes anti-estática</strong>.</li>
+          <li>
+            <strong>Recipientes o bandejas</strong> (para acomodar los tornillos
+            y piezas que se desmontan sin perderlos).
+          </li>
+          <li>
+            <strong>Púa de plástico</strong> (para desencastrar las carcasas de
+            las netbooks sin dejar marcas).
+          </li>
+          <li>
+            <strong>Pendrive</strong> (preparado con el sistema operativo y
+            paquete Office 2007).
+          </li>
+          <li>
+            <strong>Cargador para netbook</strong> (Consultar al profesor/a por el tipo de punta de carga).
+          </li>
+        </ul>
+
+        <h3
+          style="
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            font-size: 1.1rem;
+          "
+        >
+          ⚠️ Precauciones
+        </h3>
+        <div
+          style="
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            padding: 1rem;
+            border-radius: 4px;
+          "
+        >
+          <p
+            style="
+              color: var(--text-main);
+              font-size: 0.95rem;
+              margin: 0;
+              line-height: 1.5;
+            "
+          >
+            <strong>Estática:</strong> No se recomienda el uso de
+            destornilladores imantados ni imanes cerca de los componentes
+            integrados, ya que pueden generar descargas de estática y dañar la
+            placa.
+          </p>
         </div>
       </div>
     </div>
