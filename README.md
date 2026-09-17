@@ -1,8 +1,6 @@
-<div style="background: linear-gradient(180deg, #048ABF 0%, #FFFFFF 50%, #D91E75 100%); width: 100%; height: 400px; display: flex; align-items: center; justify-content: center;">
-  <p align="center" style="margin: 0;">
-    <img src="https://github.com/AngelesBlagine/TSO-netbooks/blob/22bacf8c7e75c199669385fc38b682524096abfd/logoUNO/UNO-LOGO.png" alt="Universidad Nacional del Oeste - Logo" width="200"/>
-  </p>
-</div>
+<p align="center">
+  <img src="./logoUNO/banner.svg" alt="Banner del Proyecto">
+</p>
 
 <h1 align="center">💻 Sistema de Gestión de Reparación de Netbooks</h1>
 
