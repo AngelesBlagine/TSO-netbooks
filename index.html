@@ -121,6 +121,200 @@
             </p>
           </div>
         </div>
+
+        <div
+          class="card"
+          style="
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary);
+          "
+          id="home-visual-guide"
+        >
+          <h3
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              margin-bottom: 1rem;
+            "
+          >
+            🔍 Guía Visual (Próximamente)
+          </h3>
+          <p
+            style="
+              font-size: 0.9rem;
+              color: var(--text-muted);
+              margin-bottom: 1rem;
+            "
+          >
+            Selecciona la generación de la netbook para indicar qué placa madre
+            se va a analizar.
+          </p>
+
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+              margin-bottom: 1.5rem;
+            "
+            id="home-gen-selector"
+          >
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G1
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G2
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G3
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G4
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G5
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G6
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G7
+            </button>
+            <button
+              class="btn btn-secondary home-gen-btn"
+              style="width: auto; padding: 0.5rem 1rem"
+              onclick="selectHomeGen(this)"
+            >
+              G8
+            </button>
+          </div>
+
+          <div
+            style="
+              position: relative;
+              background-color: var(--bg-body);
+              border-radius: 8px;
+              border: 1px dashed var(--border);
+              padding: 2rem;
+              text-align: center;
+              margin-bottom: 1.5rem;
+              overflow: hidden;
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                inset: 0;
+                background: var(--bg-main);
+                opacity: 0.85;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 2;
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                style="color: var(--text-muted); margin-bottom: 0.5rem"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span style="font-weight: 600; color: var(--text-main)"
+                >Contenido Protegido / Próximamente</span
+              >
+            </div>
+
+            <div style="opacity: 0.3; filter: blur(2px)">
+              <div
+                style="
+                  height: 100px;
+                  background: var(--border);
+                  margin-bottom: 1rem;
+                  border-radius: 4px;
+                "
+              ></div>
+              <div
+                style="
+                  height: 60px;
+                  background: var(--border);
+                  width: 60%;
+                  margin: 0 auto;
+                  border-radius: 4px;
+                "
+              ></div>
+            </div>
+          </div>
+
+          <button
+            class="btn"
+            style="
+              width: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 0.5rem;
+            "
+            onclick="openScannerModal()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"
+              ></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+            Escanear Placa
+          </button>
+        </div>
         <div class="card" id="quick-register-wizard" style="margin-top: 2rem">
           <h2>Registro Rápido de Netbook</h2>
           <p style="color: var(--text-muted); margin-bottom: 1rem">
@@ -785,6 +979,80 @@
           </p>
         </div>
 
+        <div
+          style="
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: var(--bg-main);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+          "
+        >
+          <h3
+            style="
+              font-size: 1rem;
+              margin-bottom: 1rem;
+              color: var(--text-main);
+            "
+          >
+            Personalización
+          </h3>
+
+          <div style="margin-bottom: 1.25rem">
+            <label
+              style="
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                font-weight: 500;
+              "
+              >Apariencia</label
+            >
+            <div class="mode-toggle">
+              <button
+                id="theme-btn-light"
+                class="active"
+                onclick="setThemeMode('light')"
+              >
+                ☀️ Claro
+              </button>
+              <button id="theme-btn-dark" onclick="setThemeMode('dark')">
+                🌙 Oscuro
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label
+              style="
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                font-weight: 500;
+              "
+              >Color de Acento</label
+            >
+            <div class="theme-options">
+              <div
+                class="swatch active"
+                id="swatch-coral"
+                style="background-color: #f06e55"
+                onclick="setThemeColor('coral')"
+              ></div>
+              <div
+                class="swatch"
+                id="swatch-indigo"
+                style="background-color: #4f46e5"
+                onclick="setThemeColor('indigo')"
+              ></div>
+              <div
+                class="swatch"
+                id="swatch-borgona"
+                style="background-color: #8a1538"
+                onclick="setThemeColor('borgona')"
+              ></div>
+            </div>
+          </div>
+        </div>
+
         <div style="margin-bottom: 1.5rem">
           <h3
             style="
@@ -795,33 +1063,6 @@
           >
             Personalización
           </h3>
-          <button
-            class="btn btn-secondary"
-            style="
-              width: 100%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 0.5rem;
-            "
-            onclick="toggleTheme()"
-          >
-            <svg
-              id="settings-theme-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-            Alternar Tema (Claro / Oscuro)
-          </button>
         </div>
 
         <div>
@@ -1106,7 +1347,8 @@
             paquete Office 2007).
           </li>
           <li>
-            <strong>Cargador para netbook</strong> (Consultar al profesor/a por el tipo de punta de carga).
+            <strong>Cargador para netbook</strong> (Consultar al profesor/a por
+            el tipo de punta de carga).
           </li>
         </ul>
 
@@ -1140,6 +1382,186 @@
             integrados, ya que pueden generar descargas de estática y dañar la
             placa.
           </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Escáner Modal -->
+    <div
+      id="scanner-modal"
+      class="modal-overlay"
+      onclick="if (event.target === this) closeScannerModal();"
+    >
+      <div class="modal-content" style="max-width: 500px; text-align: left">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+          "
+        >
+          <h2
+            style="
+              margin: 0;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              font-size: 1.25rem;
+            "
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"
+              ></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+            Reconocimiento Visual
+          </h2>
+          <button
+            class="btn btn-secondary"
+            style="width: auto; padding: 0.5rem; line-height: 1"
+            onclick="closeScannerModal()"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div
+          style="
+            background: #000;
+            height: 200px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <div
+            style="
+              position: absolute;
+              inset: 20px;
+              border: 2px dashed rgba(255, 255, 255, 0.4);
+              border-radius: 8px;
+            "
+          ></div>
+          <div
+            style="
+              color: rgba(255, 255, 255, 0.6);
+              font-family: monospace;
+              font-size: 0.9rem;
+            "
+          >
+            Esperando cámara...
+          </div>
+          <div
+            style="
+              position: absolute;
+              bottom: 10px;
+              right: 10px;
+              color: rgba(255, 255, 255, 0.8);
+              font-size: 0.8rem;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+            "
+          >
+            <span
+              style="
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                background: red;
+                border-radius: 50%;
+                box-shadow: 0 0 4px red;
+              "
+            ></span>
+            EN VIVO
+          </div>
+        </div>
+
+        <div
+          style="
+            background-color: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+          "
+        >
+          <div style="font-size: 1.5rem">🟢</div>
+          <div>
+            <strong
+              style="
+                display: block;
+                color: var(--text-main);
+                margin-bottom: 0.25rem;
+              "
+              >Recuadro de detección verde</strong
+            >
+            <p
+              style="
+                margin: 0;
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                line-height: 1.4;
+              "
+            >
+              Identificación automática en tiempo real de la zona exacta del
+              integrado a intervenir al enfocar la placa.
+            </p>
+          </div>
+        </div>
+
+        <div
+          style="
+            background-color: var(--bg-main);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 6px;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+          "
+        >
+          <div style="font-size: 1.5rem">🔄</div>
+          <div>
+            <strong
+              style="
+                display: block;
+                color: var(--text-main);
+                margin-bottom: 0.25rem;
+              "
+              >Indicador de orientación</strong
+            >
+            <p
+              style="
+                margin: 0;
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                line-height: 1.4;
+              "
+            >
+              Alerta inteligente que indicará "Dar vuelta la placa" en caso de
+              que el componente buscado se encuentre del lado posterior.
+            </p>
+          </div>
         </div>
       </div>
     </div>

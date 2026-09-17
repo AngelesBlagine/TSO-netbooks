@@ -218,7 +218,7 @@ export function loadProcedure(genId) {
 
   if (CONFIG.MODO_EXPOSICION) {
     container.innerHTML = `
-      <div class="card locked-card">
+      <div class="card locked-card" style="margin-bottom: 1.5rem;">
           <div class="locked-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -228,6 +228,52 @@ export function loadProcedure(genId) {
           <h3>Contenido Protegido: Solicite Acceso</h3>
           <span class="locked-subtitle">Próximamente</span>
           <p>El procedimiento técnico detallado se encuentra restringido por motivos de seguridad en esta versión.</p>
+      </div>
+
+      <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+        <h3 style="display:flex; align-items:center; gap:0.5rem; margin-bottom: 1rem;">
+           🔍 Guía Visual (Próximamente)
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Selecciona la generación de la netbook para indicar qué placa madre se va a analizar.
+        </p>
+        
+        <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom: 1.5rem;">
+                    ${["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8"]
+                      .map((g) => {
+                        if (g === gen.id) {
+                          return (
+                            '<button class="btn btn-primary" style="width:auto; padding:0.5rem 1rem; cursor:default;">' +
+                            g +
+                            "</button>"
+                          );
+                        } else {
+                          return (
+                            '<button class="btn btn-secondary" disabled style="width:auto; padding:0.5rem 1rem; opacity:0.6; cursor:not-allowed;">' +
+                            g +
+                            "</button>"
+                          );
+                        }
+                      })
+                      .join("")}
+        </div>
+        
+        <div style="position:relative; background-color: var(--bg-body); border-radius: 8px; border: 1px dashed var(--border); padding: 2rem; text-align: center; margin-bottom: 1.5rem; overflow: hidden;">
+           <div style="position:absolute; inset:0; background:var(--bg-main); opacity:0.85; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:2;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-muted); margin-bottom:0.5rem;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <span style="font-weight:600; color:var(--text-main);">Contenido Protegido / Próximamente</span>
+           </div>
+           
+           <div style="opacity:0.3; filter:blur(2px);">
+              <div style="height: 100px; background:var(--border); margin-bottom: 1rem; border-radius: 4px;"></div>
+              <div style="height: 60px; background:var(--border); width: 60%; margin: 0 auto; border-radius: 4px;"></div>
+           </div>
+        </div>
+        
+        <button class="btn" style="width: 100%; display:flex; justify-content:center; align-items:center; gap:0.5rem;" onclick="openScannerModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+            Escanear Placa
+        </button>
       </div>
     `;
     navigateTo("view-procedimiento");
@@ -688,32 +734,61 @@ export async function confirmLiberarEquipo() {
   }
 }
 
-export function toggleTheme() {
-  const isDark = document.body.classList.toggle("dark-theme");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  updateThemeIcon(isDark);
+export function setThemeMode(mode) {
+  document.body.setAttribute("data-theme-mode", mode);
+  localStorage.setItem("app_theme_mode", mode);
+
+  const btnLight = document.getElementById("theme-btn-light");
+  const btnDark = document.getElementById("theme-btn-dark");
+  if (btnLight && btnDark) {
+    if (mode === "dark") {
+      btnDark.classList.add("active");
+      btnLight.classList.remove("active");
+    } else {
+      btnLight.classList.add("active");
+      btnDark.classList.remove("active");
+    }
+  }
+}
+
+export function setThemeColor(color) {
+  document.body.setAttribute("data-theme-color", color);
+  localStorage.setItem("app_theme_color", color);
+
+  const swatches = ["coral", "indigo", "borgona", "verde"];
+  swatches.forEach((c) => {
+    const el = document.getElementById("swatch-" + c);
+    if (el) {
+      if (c === color) {
+        el.classList.add("active");
+      } else {
+        el.classList.remove("active");
+      }
+    }
+  });
 }
 
 export function initTheme() {
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark-theme");
-    updateThemeIcon(true);
-  } else {
-    updateThemeIcon(false);
-  }
-}
+  let savedMode = localStorage.getItem("app_theme_mode");
+  let savedColor = localStorage.getItem("app_theme_color");
 
-function updateThemeIcon(isDark) {
-  const icon = document.getElementById("theme-icon");
-  if (!icon) return;
-  if (isDark) {
-    // Show sun for dark theme (to switch to light)
-    icon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
-  } else {
-    // Show moon for light theme (to switch to dark)
-    icon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+  if (!savedMode) {
+    // Check OS preference
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      savedMode = "dark";
+    } else {
+      savedMode = "light";
+    }
   }
+  if (!savedColor) {
+    savedColor = "coral"; // default
+  }
+
+  setThemeMode(savedMode);
+  setThemeColor(savedColor);
 }
 
 export async function openSettingsModal() {
@@ -1335,4 +1410,25 @@ export function closeKitModal() {
   if (modal) {
     modal.classList.remove("active");
   }
+}
+
+export function openScannerModal() {
+  const modal = document.getElementById("scanner-modal");
+  if (modal) modal.classList.add("active");
+}
+export function closeScannerModal() {
+  const modal = document.getElementById("scanner-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+export function selectHomeGen(btn) {
+  const container = document.getElementById("home-gen-selector");
+  if (!container) return;
+  const buttons = container.querySelectorAll(".home-gen-btn");
+  buttons.forEach((b) => {
+    b.classList.remove("btn-primary");
+    b.classList.add("btn-secondary");
+  });
+  btn.classList.remove("btn-secondary");
+  btn.classList.add("btn-primary");
 }

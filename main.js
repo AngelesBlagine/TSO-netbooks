@@ -27,7 +27,8 @@ import {
   closeEditModal,
   saveEditEquipo,
   renderGeneracionesCatalog,
-  toggleTheme,
+  setThemeMode,
+  setThemeColor,
   initTheme,
   openSettingsModal,
   closeSettingsModal,
@@ -38,6 +39,9 @@ import {
   deleteBitacoraRecord,
   openKitModal,
   closeKitModal,
+  openScannerModal,
+  selectHomeGen,
+  closeScannerModal,
 } from "./ui.js";
 
 // Exponer funciones globales para los atributos 'onclick' en el HTML
@@ -69,7 +73,11 @@ window.cancelBitacoraEdit = cancelBitacoraEdit;
 window.deleteBitacoraRecord = deleteBitacoraRecord;
 window.openKitModal = openKitModal;
 window.closeKitModal = closeKitModal;
-window.toggleTheme = toggleTheme;
+window.openScannerModal = openScannerModal;
+window.selectHomeGen = selectHomeGen;
+window.closeScannerModal = closeScannerModal;
+window.setThemeMode = setThemeMode;
+window.setThemeColor = setThemeColor;
 window.openSettingsModal = openSettingsModal;
 window.initQrw = initQrw;
 window.qrwNext = qrwNext;

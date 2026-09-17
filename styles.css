@@ -1,8 +1,8 @@
-:root {
+:root,
+[data-theme-mode="light"] {
+  /* Light Mode - Base */
   --bg-main: #f6f8f7;
-  --primary: #249b7a;
-  --primary-dark: #176b59;
-  --primary-light: #e5f4ef;
+  --bg-body: #f6f8f7; /* Adding bg-body just in case, used in UI */
   --warning-bg: #fff5d6;
   --warning: #f2c94c;
   --error: #e96a6a;
@@ -11,15 +11,16 @@
   --white: #ffffff;
   --border: #e2e8e5;
   --shadow: 0 4px 12px rgba(23, 37, 47, 0.05);
+
   --radius-card: 12px;
   --radius-btn: 8px;
   --transition: all 0.2s ease-in-out;
 }
-body.dark-theme {
+
+[data-theme-mode="dark"] {
+  /* Dark Mode - Base */
   --bg-main: #121212;
-  --primary: #2ebc96;
-  --primary-dark: #249b7a;
-  --primary-light: #1f3832;
+  --bg-body: #121212;
   --warning-bg: #4a3d13;
   --warning: #f2c94c;
   --error: #ef5350;
@@ -30,14 +31,93 @@ body.dark-theme {
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
+/* 
+  Colors 
+  data-theme-color="coral" (default)
+*/
+:root,
+[data-theme-mode="light"][data-theme-color="coral"] {
+  --primary: #f06e55;
+  --primary-dark: #d4543d;
+  --primary-light: #fde8e4;
+}
+[data-theme-mode="dark"][data-theme-color="coral"] {
+  --primary: #ff8a65;
+  --primary-dark: #f06e55;
+  --primary-light: #4a231c;
+}
+
+/* data-theme-color="indigo" */
+[data-theme-mode="light"][data-theme-color="indigo"] {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-light: #e0e7ff;
+}
+[data-theme-mode="dark"][data-theme-color="indigo"] {
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --primary-light: #1e1b4b;
+}
+
+/* data-theme-color="borgona" */
+[data-theme-mode="light"][data-theme-color="borgona"] {
+  --primary: #8a1538;
+  --primary-dark: #5c0c24;
+  --primary-light: #f5e6ea;
+}
+[data-theme-mode="dark"][data-theme-color="borgona"] {
+  --primary: #e05d7c;
+  --primary-dark: #b23a5b;
+  --primary-light: #3d101c;
+}
+
+/* data-theme-color="verde" */
+[data-theme-mode="light"][data-theme-color="verde"] {
+  --primary: #249b7a;
+  --primary-dark: #176b59;
+  --primary-light: #e5f4ef;
+}
+[data-theme-mode="dark"][data-theme-color="verde"] {
+  --primary: #2ebc96;
+  --primary-dark: #249b7a;
+  --primary-light: #1f3832;
+}
+
+/* Backwards compatibility for toggleTheme in ui.js (adds .dark-theme to body) */
+body.dark-theme {
+  --bg-main: #121212;
+  --bg-body: #121212;
+  --warning-bg: #4a3d13;
+  --error: #ef5350;
+  --text-main: #e0e0e0;
+  --text-muted: #9e9e9e;
+  --white: #1e1e1e;
+  --border: #333333;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-header, .card, .btn, input, textarea, select, table th, table td, .modal-content, .badge {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+header,
+.card,
+.btn,
+input,
+textarea,
+select,
+table th,
+table td,
+.modal-content,
+.badge {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
 }
-
 
 * {
   box-sizing: border-box;
@@ -633,4 +713,61 @@ main {
   max-width: 450px;
   margin-top: 0.5rem;
   line-height: 1.6;
+}
+
+.theme-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+  position: relative;
+}
+.swatch:hover {
+  transform: scale(1.1);
+}
+.swatch.active {
+  border-color: var(--text-main);
+}
+.swatch.active::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.mode-toggle {
+  display: flex;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+.mode-toggle button {
+  flex: 1;
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.mode-toggle button.active {
+  background-color: var(--primary);
+  color: white;
 }
